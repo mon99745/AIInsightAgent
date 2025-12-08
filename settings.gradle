@@ -6,5 +6,6 @@ pluginManagement {
 
 rootProject.name = 'aiinsight-agent'
 
-include 'aia-core'
+include 'aia-common'
 include 'aia-app'
+include 'aia-core'
