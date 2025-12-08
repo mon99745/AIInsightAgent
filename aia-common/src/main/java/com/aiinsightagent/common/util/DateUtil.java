@@ -1,7 +1,7 @@
 package com.aiinsightagent.common.util;
 
-import com.licensecommon.exception.CommonError;
-import com.licensecommon.exception.CommonException;
+import com.aiinsightagent.common.exception.CommonError;
+import com.aiinsightagent.common.exception.CommonException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 
-import static com.licensecommon.exception.CommonError.INVALID_EXPIRE_DATE_FORMAT;
+import static com.aiinsightagent.common.exception.CommonError.INVALID_EXPIRE_DATE_FORMAT;
+
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

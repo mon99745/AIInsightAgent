@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum CommonError
-		implements java.lang.Error {
+		implements Error {
 	INVALID_OPERATION_TYPE(CommonError.CODE_PREFIX + "01-10", "Unsupported license type", HttpStatus.BAD_REQUEST),
 	INVALID_OPERATION_KEY(CommonError.CODE_PREFIX + "01-11", "Unsupported license key", HttpStatus.BAD_REQUEST),
 	INVALID_EXPIRE_DATE_FORMAT(CommonError.CODE_PREFIX + "01-12", "Invalid expDate format (format: yyyy-MM-dd)", HttpStatus.BAD_REQUEST),

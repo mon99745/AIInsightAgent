@@ -14,22 +14,22 @@ public class CommonException
 	}
 
 	public CommonException(String message, Throwable cause) {
-		this(java.lang.Error.DefaultError.NONE, message, cause);
+		this(Error.DefaultError.NONE, message, cause);
 	}
 
-	public CommonException(java.lang.Error error) {
+	public CommonException(Error error) {
 		this(error, (String) null);
 	}
 
-	public CommonException(java.lang.Error error, String message) {
+	public CommonException(Error error, String message) {
 		this(error, message, null);
 	}
 
-	public CommonException(java.lang.Error error, Throwable cause) {
+	public CommonException(Error error, Throwable cause) {
 		this(error, null, cause);
 	}
 
-	public CommonException(java.lang.Error error, String message, Throwable cause) {
+	public CommonException(Error error, String message, Throwable cause) {
 		super(error, message, cause);
 	}
 }

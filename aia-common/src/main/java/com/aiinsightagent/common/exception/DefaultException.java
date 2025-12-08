@@ -1,8 +1,8 @@
 package com.aiinsightagent.common.exception;
 
 
-import com.licensecommon.util.ExceptionUtil;
-import com.licensecommon.util.StringUtil;
+import com.aiinsightagent.common.util.ExceptionUtil;
+import com.aiinsightagent.common.util.StringUtil;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,7 +17,7 @@ public abstract class DefaultException
 	 */
 	public static final String CODE_PREFIX = "DEF-";
 
-	protected final java.lang.Error error;
+	protected final Error error;
 
 	/**
 	 * 해당 예외 조건에 따른 예외 발생
@@ -39,13 +39,13 @@ public abstract class DefaultException
 	 * @param message   에러 메세지
 	 * @param cause     원인 예외
 	 */
-	public static void assertTrue(boolean condition, java.lang.Error error, String message, Throwable cause) {
+	public static void assertTrue(boolean condition, Error error, String message, Throwable cause) {
 		if (!condition) {
 			throw new CommonException(error, message, cause);
 		}
 	}
 
-	protected DefaultException(java.lang.Error error, String message, Throwable cause) {
+	protected DefaultException(Error error, String message, Throwable cause) {
 		super(StringUtil.joiningBySpace(error.toCodeString(),
 						StringUtils.isEmpty(message) && cause != null ? ExceptionUtil.getNotRootMessage(cause) : message),
 				cause);

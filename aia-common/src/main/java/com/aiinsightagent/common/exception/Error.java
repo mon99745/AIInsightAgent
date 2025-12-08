@@ -1,7 +1,7 @@
 package com.aiinsightagent.common.exception;
 
-import com.licensecommon.util.SpringUtil;
-import com.licensecommon.util.StringUtil;
+import com.aiinsightagent.common.util.SpringUtil;
+import com.aiinsightagent.common.util.StringUtil;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
