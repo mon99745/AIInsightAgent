@@ -10,3 +10,13 @@ springdoc:
     operationsSorter: alpha
     docExpansion: none
     path: /api
+
+### 스프링 관리
+spring:
+  ai:
+    gemini:
+      api-key: YOUR_GEMINI_API_KEY
+      model: gemini-1.5-pro
+      temperature: 0.7
+      base-url: https://generativelanguage.com
+      completions-path: v1beta2/models/{model}/completions
