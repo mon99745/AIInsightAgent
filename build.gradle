@@ -25,6 +25,7 @@ subprojects {
 	dependencies {
 		implementation 'org.springframework.boot:spring-boot-starter-web'
 		implementation 'com.google.guava:guava:32.1.2-jre'
+		implementation 'com.google.genai:google-genai:1.24.0'
 
 		developmentOnly 'org.springframework.boot:spring-boot-devtools'
 		annotationProcessor 'org.projectlombok:lombok'
