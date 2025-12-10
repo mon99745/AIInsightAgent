@@ -3,16 +3,13 @@ server:
   ### 내장 WAS 관리
   port: 28080
 
-##### 문서 관리
-springdoc:
-  swagger-ui:
-    tagsSorter: alpha
-    operationsSorter: alpha
-    docExpansion: none
-    path: /api
-
 ### 스프링 관리
 spring:
+  config:
+    name: AIA-APP
+    import: application-common.yml
+  profiles:
+    active: local
   ai:
     gemini:
       api-key: YOUR_GEMINI_API_KEY
@@ -20,3 +17,4 @@ spring:
       temperature: 0.7
       base-url: https://generativelanguage.com
       completions-path: v1beta2/models/{model}/completions
+

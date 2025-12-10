@@ -1,11 +1,12 @@
 package com.aiinsightagent.core.util;
 
-import com.aiinsightagent.common.message.InsightResponse;
+import com.aiinsightagent.core.message.InsightResponse;
 import com.google.genai.types.GenerateContentResponse;
 import org.springframework.http.HttpStatus;
 
 public class GeminiResponseParser {
-	private GeminiResponseParser() {}
+	private GeminiResponseParser() {
+	}
 
 	public static InsightResponse toInsightResponse(GenerateContentResponse response) {
 		String insightText = response.text();

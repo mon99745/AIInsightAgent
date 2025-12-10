@@ -1,4 +1,4 @@
-package com.aiinsightagent.common.message;
+package com.aiinsightagent.core.message;
 
 import lombok.Builder;
 import lombok.Getter;

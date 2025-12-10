@@ -1,4 +1,4 @@
-package com.aiinsightagent.app.controller;
+package com.aiinsightagent.common.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
