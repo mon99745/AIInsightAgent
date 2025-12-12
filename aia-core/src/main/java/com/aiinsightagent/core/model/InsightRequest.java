@@ -1,4 +1,4 @@
-package com.aiinsightagent.core.message;
+package com.aiinsightagent.core.model;
 
 import com.aiinsightagent.core.prompt.UserPrompt;
 import lombok.Builder;
