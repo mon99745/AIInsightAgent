@@ -1,6 +1,8 @@
 package com.aiinsightagent.common.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +26,33 @@ public class CommonExceptionHandler {
 		);
 
 		// 상태코드는 Error 객체에서 가져오도록 구현 가능, 없으면 400
+		return ResponseEntity.status(400).body(body);
+	}
+
+	// 필수 파라미터 누락 처리
+	@ExceptionHandler(MissingServletRequestParameterException.class)
+	public ResponseEntity<Map<String, Object>> handleMissingParams(
+			MissingServletRequestParameterException ex,
+			HttpServletRequest request) {
+
+		Map<String, Object> body = Map.of(
+				"code", "MISSING_PARAMETER",
+				"message", "Required parameter '" + ex.getParameterName() + "' is missing",
+				"path", request.getRequestURI()
+		);
+
+		return ResponseEntity.status(400).body(body);
+	}
+
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<Map<String, Object>> handleInvalidJson(
+			HttpMessageNotReadableException ex,
+			HttpServletRequest request) {
+		Map<String, Object> body = Map.of(
+				"code", "INVALID_JSON",
+				"message", "Request body is not valid JSON: " + ex.getMostSpecificCause().getMessage(),
+				"path", request.getRequestURI()
+		);
 		return ResponseEntity.status(400).body(body);
 	}
 
