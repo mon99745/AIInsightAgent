@@ -21,7 +21,7 @@ public class SpringDocConfig {
 	@Bean
 	public OpenAPI openAPI() {
 		Contact contact = new Contact()
-				.name("AI Insight Agent")
+				.name(props.getTitle())
 				.url(props.getUrl())
 				.email(props.getEmail());
 
