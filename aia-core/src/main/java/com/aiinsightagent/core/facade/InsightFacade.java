@@ -7,28 +7,30 @@ import com.aiinsightagent.core.model.InsightRequest;
 import com.aiinsightagent.core.model.InsightResponse;
 import com.aiinsightagent.core.prompt.SystemPrompt;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
 public class InsightFacade {
-	private final GeminiChatAdapter chatService;
+	private final GeminiChatAdapter geminiChatAdapter;
 	private final PromptComposer promptService;
 
 	public InsightResponse answer(String purpose, String userPrompt) {
-		String finalPrompt = promptService.getCombinedPrompt(purpose, SystemPrompt.SINGLE_ITEM, userPrompt);
+		String finalPrompt = promptService.getCombinedPrompt(
+				purpose,
+				SystemPrompt.SINGLE_ITEM,
+				userPrompt);
 
-		return GeminiResponseParser.toInsightResponse(chatService.getResponse(finalPrompt));
+		return GeminiResponseParser.toInsightResponse(geminiChatAdapter.getResponse(finalPrompt));
 	}
 
 	public InsightResponse analysis(InsightRequest request) {
-		StringBuilder userInputBuilder = new StringBuilder();
+		String finalPrompt = promptService.getCombinedPrompt(
+				request.getPurpose(),
+				SystemPrompt.MULTI_ITEM,
+				request.getUserPrompt().get(0).getData().toString()
+		);
 
-		String combinedPrompt = SystemPrompt.MULTI_ITEM +
-				"\nPurpose: " + request.getPurpose() +
-				"\nUser input:\n" + userInputBuilder.toString();
-
-		return GeminiResponseParser.toInsightResponse(chatService.getResponse(combinedPrompt));
+		return GeminiResponseParser.toInsightResponse(geminiChatAdapter.getResponse(finalPrompt));
 	}
 }
