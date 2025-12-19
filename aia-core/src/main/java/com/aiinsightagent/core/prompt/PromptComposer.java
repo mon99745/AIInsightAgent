@@ -3,8 +3,10 @@ package com.aiinsightagent.core.prompt;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PromptComposer {
@@ -17,6 +19,8 @@ public class PromptComposer {
 				.systemPrompt(systemPrompt)
 				.userPrompt(userPrompt)
 				.build();
+
+		log.info("Composed Prompt: {}", prompt);
 
 		try {
 			finalPrompt = objectMapper.writeValueAsString(prompt);
