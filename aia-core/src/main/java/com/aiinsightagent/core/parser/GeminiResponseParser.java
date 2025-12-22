@@ -2,6 +2,7 @@ package com.aiinsightagent.core.parser;
 
 import com.aiinsightagent.core.model.InsightDetail;
 import com.aiinsightagent.core.model.InsightResponse;
+import com.aiinsightagent.core.preprocess.LlmJsonPreprocessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.genai.types.GenerateContentResponse;
 import lombok.extern.slf4j.Slf4j;

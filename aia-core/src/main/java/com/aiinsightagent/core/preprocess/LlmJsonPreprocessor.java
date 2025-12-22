@@ -1,8 +1,9 @@
-package com.aiinsightagent.core.parser;
+package com.aiinsightagent.core.preprocess;
 
 public class LlmJsonPreprocessor {
 
-	private LlmJsonPreprocessor() {}
+	private LlmJsonPreprocessor() {
+	}
 
 	/**
 	 * LLM이 반환한 응답에서 Markdown 코드블록(````json`, ``` 등)과
