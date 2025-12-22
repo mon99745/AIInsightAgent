@@ -1,16 +1,19 @@
 package com.aiinsightagent.core.parser;
 
+import com.aiinsightagent.core.exception.InsightError;
+import com.aiinsightagent.core.exception.InsightException;
 import com.aiinsightagent.core.model.InsightDetail;
 import com.aiinsightagent.core.model.InsightResponse;
 import com.aiinsightagent.core.preprocess.LlmJsonPreprocessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.genai.types.GenerateContentResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
-@Slf4j
+import java.io.IOException;
+
 public class GeminiResponseParser {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
+
 	private GeminiResponseParser() {
 	}
 
@@ -18,15 +21,14 @@ public class GeminiResponseParser {
 		String raw = response.text();
 		String pureJson = LlmJsonPreprocessor.extractPureJson(raw);
 		if (pureJson == null || pureJson.isBlank()) {
-			throw new RuntimeException("Gemini returned empty response");
+			throw new InsightException(InsightError.EMPTY_GEMINI_RESPONSE);
 		}
 
 		InsightDetail insightDetail = null;
 		try {
 			insightDetail = objectMapper.readValue(pureJson, InsightDetail.class);
-		} catch (Exception e) {
-			log.error("Failed to parse JSON. raw: {}", raw);
-			throw new RuntimeException("Failed to parse Gemini response to InsightDetail", e);
+		} catch (IOException e) {
+			throw new InsightException(InsightError.FAIL_JSON_PARSING, e);
 		}
 
 		return InsightResponse.builder()
@@ -34,10 +36,5 @@ public class GeminiResponseParser {
 				.resultMsg(HttpStatus.OK.getReasonPhrase())
 				.insight(insightDetail)
 				.build();
-	}
-
-	public static String formatNewLines(String text) {
-		if (text == null) return null;
-		return text.replace("\\n", "\n");
 	}
 }

@@ -1,22 +1,25 @@
 package com.aiinsightagent.core.util;
 
+import com.aiinsightagent.core.exception.InsightError;
+import com.aiinsightagent.core.exception.InsightException;
 import com.aiinsightagent.core.model.prompt.FinalPrompt;
 import com.aiinsightagent.core.model.prompt.UserPrompt;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PromptComposer {
 	private final ObjectMapper objectMapper;
 
 	public String getCombinedPrompt(String purpose, String systemPrompt, String userPrompt) {
+		if (userPrompt == null) {
+			throw new InsightException(InsightError.EMPTY_USER_PROMPT);
+		}
 		String finalPrompt;
 		FinalPrompt prompt = FinalPrompt.builder()
 				.purpose(purpose)
@@ -27,7 +30,7 @@ public class PromptComposer {
 		try {
 			finalPrompt = objectMapper.writeValueAsString(prompt);
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Failed to convert Prompt to JSON string", e);
+			throw new InsightException(InsightError.PROMPT_COMPOSITION_FAILURE);
 		}
 
 		return finalPrompt;
@@ -35,7 +38,7 @@ public class PromptComposer {
 
 	public String getCombinedUserPrompt(UserPrompt userPrompt) {
 		if (userPrompt == null) {
-			return "";
+			throw new InsightException(InsightError.EMPTY_USER_PROMPT);
 		}
 
 		StringBuilder sb = new StringBuilder();
