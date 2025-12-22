@@ -33,7 +33,7 @@ public class GeminiChatAdapter {
 
 		TokenUsage tokenUsage = GeminiTokenExtractor.extract(response);
 
-		log.info(
+		log.debug(
 				"[Gemini Token Usage] prompt={}, completion={}, total={}",
 				tokenUsage.getPromptTokens(),
 				tokenUsage.getCompletionTokens(),
