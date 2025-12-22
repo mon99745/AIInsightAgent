@@ -1,4 +1,4 @@
-package com.aiinsightagent.core.prompt;
+package com.aiinsightagent.core.model.prompt;
 
 public class SystemPrompt {
 	private SystemPrompt() {

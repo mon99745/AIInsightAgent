@@ -1,4 +1,4 @@
-package com.aiinsightagent.core.prompt;
+package com.aiinsightagent.core.model.prompt;
 
 import lombok.Builder;
 import lombok.Data;

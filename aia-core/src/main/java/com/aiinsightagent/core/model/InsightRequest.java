@@ -1,6 +1,6 @@
 package com.aiinsightagent.core.model;
 
-import com.aiinsightagent.core.prompt.UserPrompt;
+import com.aiinsightagent.core.model.prompt.UserPrompt;
 import lombok.Builder;
 import lombok.Getter;
 
