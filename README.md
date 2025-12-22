@@ -2,7 +2,7 @@
 
 ## 🌱 Potential Use Cases (To Be Defined)
 
-현재 **AIInsightAgent**는 *GPT 모델을 활용하여 요청 데이터를 분석하는 엔진*을 구축하는 것에 초점을 두고 있으며,  
+현재 **AIInsightAgent**는 LLM을 활용하여 요청 데이터를 분석하는 에이전트*를 구축하는 것에 초점을 두고 있으며,  
 구체적인 적용 시나리오(Use Cases)는 정의하지 않은 상태입니다.
 
 아래는 프로젝트가 향후 적용될 수 있는 **잠재적 사용 예시(Potential Use Cases)**입니다.
