@@ -13,8 +13,8 @@ public class SpringDocProperties {
 	private String title;
 	private String description;
 	private String version;
-	private String email;
-	private String url;
+	private String contactEmail;
+	private String contactUrl;
 
 	private List<Group> groups;
 

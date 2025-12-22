@@ -8,7 +8,7 @@ common:
     title: "AI Insight Agent"
     description: "AI Insight API"
     version: "1.0"
-    email: "demo@exmple.com"
+    contact-email: "demo@exmple.com"
 
 ### Spring 문서 관리
 springdoc:

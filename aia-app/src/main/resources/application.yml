@@ -3,6 +3,10 @@ server:
   ### 내장 WAS 관리
   port: 28080
 
+logging:
+  level:
+    root: INFO
+
 ### 스프링 관리
 spring:
   config:
