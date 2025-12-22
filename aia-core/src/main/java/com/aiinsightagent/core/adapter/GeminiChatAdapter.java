@@ -4,6 +4,7 @@ import com.aiinsightagent.core.config.GeminiProperties;
 import com.aiinsightagent.core.model.TokenUsage;
 import com.aiinsightagent.core.util.GeminiTokenExtractor;
 import com.google.genai.Client;
+import com.google.genai.Models;
 import com.google.genai.types.GenerateContentResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class GeminiChatAdapter {
 	protected final GeminiProperties geminiProperties;
-	private final Client geminiClient;
+	private final Models models;
 
 	/**
 	 * Gemini Chat 응답 생성
@@ -24,7 +25,7 @@ public class GeminiChatAdapter {
 	 * @return response
 	 */
 	public GenerateContentResponse getResponse(String prompt) {
-		GenerateContentResponse response = geminiClient.models.generateContent(
+		GenerateContentResponse response = models.generateContent(
 				geminiProperties.getModel(),
 				prompt,
 				null
