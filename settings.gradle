@@ -1,0 +1,11 @@
+pluginManagement {
+    plugins {
+        id 'org.springframework.boot' version '3.5.8'
+    }
+}
+
+rootProject.name = 'aiinsight-agent'
+
+include 'aia-common'
+include 'aia-app'
+include 'aia-core'

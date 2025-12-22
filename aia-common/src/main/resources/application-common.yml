@@ -1,0 +1,21 @@
+spring:
+  config:
+    name: COMMON
+
+### Spring 공통 문서 관리
+common:
+  api-doc:
+    title: "AI Insight Agent"
+    description: "AI Insight API"
+    version: "1.0"
+    contact-email: "demo@exmple.com"
+
+### Spring 문서 관리
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /api
+    enabled: true
+  # 일반화된 응답 사용 여부 결정(Handler 충돌방지)
+  override-with-generic-response: false

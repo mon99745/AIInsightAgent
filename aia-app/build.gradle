@@ -1,0 +1,13 @@
+plugins {
+	id 'java'
+	id 'war'
+}
+
+war {
+	enabled = false
+}
+
+dependencies {
+	implementation project(':aia-core')
+	implementation project(':aia-common')
+}
