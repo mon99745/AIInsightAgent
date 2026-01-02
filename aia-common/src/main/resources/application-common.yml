@@ -12,6 +12,9 @@ common:
 
 ### Spring 문서 관리
 springdoc:
+  server:
+    url: https://localhost
+    description: Dev server
   api-docs:
     enabled: true
   swagger-ui:

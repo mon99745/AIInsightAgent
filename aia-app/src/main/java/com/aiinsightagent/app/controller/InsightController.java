@@ -1,9 +1,9 @@
 package com.aiinsightagent.app.controller;
 
 
+import com.aiinsightagent.app.service.InsightService;
 import com.aiinsightagent.core.model.InsightRequest;
 import com.aiinsightagent.core.model.InsightResponse;
-import com.aiinsightagent.core.facade.InsightFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,17 +23,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class InsightController {
 	public static final String TAG = "AI Insight API";
 	public static final String PATH = "/api/v1/";
-	private final InsightFacade insightFacade;
+	private final InsightService insightService;
 
-	@Operation(summary = "AI answer")
+	@Operation(summary = "AI answer - 단건(DataKey 기준) 데이터 테스트용")
 	@GetMapping("answer")
 	public InsightResponse answer(@RequestParam String purpose, @RequestParam String prompt) {
-		return insightFacade.answer(purpose, prompt);
+		return insightService.requestInsight(purpose, prompt);
 	}
 
 	@Operation(summary = "AI analysis")
 	@PostMapping("analysis")
 	public InsightResponse analysis(@RequestBody InsightRequest data) {
-		return insightFacade.analysis(data);
+		return insightService.requestInsight(data);
 	}
 }
