@@ -16,9 +16,14 @@ spring:
     active: local
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/runform?rewriteBatchedStatements=true
+    url: jdbc:mariadb://localhost:3306/analysis_platform?rewriteBatchedStatements=true
     username: sa
     password:
+  ### JPA 관리
+  jpa:
+    hibernate.ddl-auto: update
+    properties.hibernate:
+      dialect: org.hibernate.dialect.MariaDBDialect
   ai:
     gemini:
       api-key: YOUR_GEMINI_API_KEY

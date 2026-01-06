@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@Tag(name = InsightController.TAG, description = "인공지능을 통한 데이터 분석 컨트롤러")
+@Tag(name = InsightController.TAG, description = "데이터 분석 요청 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(InsightController.PATH)
 public class InsightController {
-	public static final String TAG = "AI Insight API";
+	public static final String TAG = "Data Insight API";
 	public static final String PATH = "/api/v1/";
 	private final InsightService insightService;
 
