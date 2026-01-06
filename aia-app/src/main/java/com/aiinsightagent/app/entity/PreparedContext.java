@@ -1,7 +1,12 @@
 package com.aiinsightagent.app.entity;
 
+import com.aiinsightagent.app.enums.ConfidenceLevel;
+import com.aiinsightagent.app.enums.ContextScope;
+import com.aiinsightagent.app.enums.ContextType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,9 +15,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(name = "prepared_context")
 public class PreparedContext {
@@ -24,19 +31,23 @@ public class PreparedContext {
 	@JoinColumn(name = "actor_id", nullable = false)
 	private Actor actor;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String contextType;     // PROFILE, BASELINE, PREFERENCE
+	private ContextType contextType;
 
+
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String contextScope;    // GLOBAL, ACTOR, SESSION
+	private ContextScope contextScope;
 
 	@Lob
-	@Column(nullable = false)
-	private String contextPayload;  // JSON
+	@Column(nullable = false, columnDefinition = "LONGTEXT")
+	private String contextPayload;
 
 	private String contextVersion;
 
-	private String confidenceLevel; // LOW, MEDIUM, HIGH
+	@Enumerated(EnumType.STRING)
+	private ConfidenceLevel confidenceLevel;
 
 	@Column(nullable = false)
 	private boolean isActive;
@@ -49,12 +60,17 @@ public class PreparedContext {
 	protected PreparedContext() {
 	}
 
-	public PreparedContext(Actor actor, String contextType, String contextPayload) {
+	public PreparedContext(Actor actor, String contextPayload) {
 		this.actor = actor;
-		this.contextType = contextType;
-		this.contextScope = "ACTOR";
+		this.contextType = ContextType.PROFILE;
+		this.contextScope = ContextScope.ACTOR;
 		this.contextPayload = contextPayload;
 		this.isActive = true;
+		this.confidenceLevel = ConfidenceLevel.MEDIUM;
 		this.regDate = LocalDateTime.now();
+	}
+
+	public String asPromptText() {
+		return contextPayload;
 	}
 }

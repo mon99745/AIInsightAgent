@@ -4,6 +4,8 @@ import com.aiinsightagent.app.enums.AnalysisStatus;
 import com.aiinsightagent.app.enums.AnalysisType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,10 +14,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Getter
 @Entity
 @Table(name = "analysis_result")
 public class AnalysisResult {
@@ -40,9 +44,10 @@ public class AnalysisResult {
 	private String analysisVersion;
 
 	@Lob
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "LONGTEXT")
 	private String resultPayload;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private AnalysisStatus status;
 
