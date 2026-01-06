@@ -66,6 +66,7 @@ public class AnalysisResult {
 	) {
 		this.requestId = UUID.randomUUID();
 		this.actor = actor;
+		this.analysisVersion = "v0.0.1";
 		this.analysisInput = analysisInput;
 		this.analysisType = analysisType;
 		this.resultPayload = resultPayload;
