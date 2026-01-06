@@ -11,5 +11,6 @@ dependencies {
 	implementation project(':aia-core')
 	implementation project(':aia-common')
 
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
 }
