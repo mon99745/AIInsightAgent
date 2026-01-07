@@ -12,7 +12,11 @@ public enum InsightError
 		implements Error {
 
 	BAD_REQUEST(InsightError.CODE_PREFIX + "01-00", "Bad Request", HttpStatus.BAD_REQUEST),
-	EMPTY_USER_PROMPT(InsightError.CODE_PREFIX + "01-00", "UserPrompt is required", HttpStatus.BAD_REQUEST),
+	EMPTY_USER_PROMPT(InsightError.CODE_PREFIX + "01-01", "UserPrompt is required", HttpStatus.BAD_REQUEST),
+	EXIST_ACTOR_PREPARED_CONTEXT(InsightError.CODE_PREFIX + "01-02", "Prepared context already exists for actor", HttpStatus.BAD_REQUEST),
+	EMPTY_ACTOR_PREPARED_CONTEXT(InsightError.CODE_PREFIX + "01-03", "No prepared context for actor", HttpStatus.BAD_REQUEST),
+	NOT_FOUND_ACTOR(InsightError.CODE_PREFIX + "01-03", "Actor not found", HttpStatus.BAD_REQUEST),
+
 
 	INTERNAL_SERVER_ERROR(InsightError.CODE_PREFIX + "02-00", "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
 	PROMPT_COMPOSITION_FAILURE(InsightError.CODE_PREFIX + "02-01", "Failed to convert Prompt to JSON string", HttpStatus.INTERNAL_SERVER_ERROR),
