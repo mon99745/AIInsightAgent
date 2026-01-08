@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class FinalPrompt {
-	String purpose;
-	String systemPrompt;
-	String userPrompt;
+	private String purpose;
+	private String systemPrompt;
+	private String userPrompt;
 }

@@ -25,6 +25,7 @@ public class InsightFacade {
 		String finalPrompt = promptComposer.getCombinedPrompt(
 				purpose,
 				SystemPrompt.SINGLE_ITEM,
+				null,
 				userPrompt);
 
 		log.debug("Final Prompt: {}", finalPrompt);
@@ -44,6 +45,7 @@ public class InsightFacade {
 		String finalPrompt = promptComposer.getCombinedPrompt(
 				request.getPurpose(),
 				SystemPrompt.MULTI_ITEM,
+				context,
 				combinedUserPrompt
 		);
 

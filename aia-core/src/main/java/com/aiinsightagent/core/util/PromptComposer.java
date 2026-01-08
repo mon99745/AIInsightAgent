@@ -7,33 +7,43 @@ import com.aiinsightagent.core.model.prompt.UserPrompt;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PromptComposer {
 	private final ObjectMapper objectMapper;
 
-	public String getCombinedPrompt(String purpose, String systemPrompt, String userPrompt) {
+	public String getCombinedPrompt(String purpose, String systemPrompt, String context, String userPrompt) {
 		if (userPrompt == null) {
 			throw new InsightException(InsightError.EMPTY_USER_PROMPT);
 		}
-		String finalPrompt;
+
+		String enhancedSystemPrompt = buildSystemPrompt(systemPrompt, context);
+
 		FinalPrompt prompt = FinalPrompt.builder()
 				.purpose(purpose)
-				.systemPrompt(systemPrompt)
+				.systemPrompt(enhancedSystemPrompt)
 				.userPrompt(userPrompt)
 				.build();
 
 		try {
-			finalPrompt = objectMapper.writeValueAsString(prompt);
+			return objectMapper.writeValueAsString(prompt);
 		} catch (JsonProcessingException e) {
 			throw new InsightException(InsightError.PROMPT_COMPOSITION_FAILURE);
 		}
+	}
 
-		return finalPrompt;
+	private String buildSystemPrompt(String systemPrompt, String context) {
+		if (context == null || context.isBlank()) {
+			return systemPrompt;
+		}
+
+		return systemPrompt + "\n\n[CONTEXT]\n" + context;
 	}
 
 	public String getCombinedUserPrompt(UserPrompt userPrompt) {
