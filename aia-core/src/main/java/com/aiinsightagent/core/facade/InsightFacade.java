@@ -32,7 +32,7 @@ public class InsightFacade {
 		return GeminiResponseParser.toInsightResponse(geminiChatAdapter.getResponse(finalPrompt));
 	}
 
-	public InsightResponse analysis(InsightRequest request) {
+	public InsightResponse analysis(InsightRequest request, String context) {
 		List<UserPrompt> userPrompts = request.getUserPrompt();
 
 		String combinedUserPrompt = userPrompts.stream()

@@ -5,6 +5,7 @@ import com.aiinsightagent.app.entity.AnalysisRawData;
 import com.aiinsightagent.app.entity.PreparedContext;
 import com.aiinsightagent.app.util.InsightRequestValidator;
 import com.aiinsightagent.core.facade.InsightFacade;
+import com.aiinsightagent.core.model.InsightHistoryResponse;
 import com.aiinsightagent.core.model.InsightRequest;
 import com.aiinsightagent.core.model.InsightResponse;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class InsightService {
 		Actor actor = actorService.getOrCreate(data.getUserId());
 
 		// 3. 원본 데이터 저장
-		AnalysisRawData rawData = rawDataService.save(actor, data.getUserPrompt().toString());
+		AnalysisRawData rawData = rawDataService.save(actor, data.getUserPrompt());
 
 		// 4. 전처리 데이터 조회
 		String contextText = contextService.findByActorKey(actor)
@@ -54,5 +55,12 @@ public class InsightService {
 		resultService.save(actor, rawData, response);
 
 		return response;
+	}
+
+	public InsightHistoryResponse getHistory(String userId) {
+		Actor actor = actorService.get(userId);
+
+		return rawDataService.getUserPromtListByActor(actor);
+
 	}
 }

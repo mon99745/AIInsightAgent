@@ -1,8 +1,6 @@
 package com.aiinsightagent.app.entity;
 
 import com.aiinsightagent.app.enums.ConfidenceLevel;
-import com.aiinsightagent.app.enums.ContextScope;
-import com.aiinsightagent.app.enums.ContextType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,20 +29,16 @@ public class PreparedContext {
 	@JoinColumn(name = "actor_id", nullable = false)
 	private Actor actor;
 
-	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private ContextType contextType;
+	private String contextType;
 
 
-	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private ContextScope contextScope;
+	private String contextScope;
 
 	@Lob
 	@Column(nullable = false, columnDefinition = "LONGTEXT")
 	private String contextPayload;
-
-	private String contextVersion;
 
 	@Enumerated(EnumType.STRING)
 	private ConfidenceLevel confidenceLevel;
@@ -60,10 +54,10 @@ public class PreparedContext {
 	protected PreparedContext() {
 	}
 
-	public PreparedContext(Actor actor, String contextPayload) {
+	public PreparedContext(Actor actor, String contextType, String contextPayload) {
 		this.actor = actor;
-		this.contextType = ContextType.PROFILE;
-		this.contextScope = ContextScope.ACTOR;
+		this.contextType = contextType;
+		this.contextScope = "ACTOR";
 		this.contextPayload = contextPayload;
 		this.isActive = true;
 		this.confidenceLevel = ConfidenceLevel.MEDIUM;
@@ -72,5 +66,10 @@ public class PreparedContext {
 
 	public String asPromptText() {
 		return contextPayload;
+	}
+
+	public void update(String category, String data) {
+		this.contextType = category;
+		this.contextPayload = data;
 	}
 }
