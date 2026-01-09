@@ -33,6 +33,7 @@ class PromptComposerTest {
 		String result = promptComposer.getCombinedPrompt(
 				purpose,
 				systemPrompt,
+				null,
 				userPrompt
 		);
 
