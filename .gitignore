@@ -40,3 +40,5 @@ out/
 ### APP ###
 **/*-local.yml
 **/todo.md
+**/*_sample.txt
+
