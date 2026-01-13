@@ -58,6 +58,7 @@ class InsightFacadeTest {
 				promptComposer.getCombinedPrompt(
 						purpose,
 						SystemPrompt.SINGLE_ITEM,
+						null,
 						userPrompt
 				)
 		).thenReturn(finalPrompt);
@@ -83,6 +84,7 @@ class InsightFacadeTest {
 					.getCombinedPrompt(
 							purpose,
 							SystemPrompt.SINGLE_ITEM,
+							null,
 							userPrompt
 					);
 
@@ -126,6 +128,7 @@ class InsightFacadeTest {
 				promptComposer.getCombinedPrompt(
 						purpose,
 						SystemPrompt.MULTI_ITEM,
+						null,
 						combinedUserPrompt
 				)
 		).thenReturn(finalPrompt);
@@ -145,8 +148,7 @@ class InsightFacadeTest {
 			).thenReturn(expectedResponse);
 
 			// when
-			InsightResponse result =
-					insightFacade.analysis(request);
+			InsightResponse result = insightFacade.analysis(request, null);
 
 			// then
 			assertNotNull(result);
@@ -156,6 +158,7 @@ class InsightFacadeTest {
 					.getCombinedPrompt(
 							purpose,
 							SystemPrompt.MULTI_ITEM,
+							null,
 							combinedUserPrompt
 					);
 

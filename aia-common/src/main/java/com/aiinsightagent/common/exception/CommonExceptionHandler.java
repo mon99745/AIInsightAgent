@@ -1,10 +1,14 @@
 package com.aiinsightagent.common.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
@@ -13,6 +17,51 @@ import java.util.Map;
  */
 @RestControllerAdvice
 public class CommonExceptionHandler {
+
+	// HTTP 405 - Method Not Allowed
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	public ResponseEntity<Map<String, Object>> handleMethodNotAllowed(
+			HttpRequestMethodNotSupportedException ex,
+			HttpServletRequest request) {
+
+		Map<String, Object> body = Map.of(
+				"code", "METHOD_NOT_ALLOWED",
+				"message", "Method '" + ex.getMethod() + "' is not supported for this endpoint",
+				"path", request.getRequestURI()
+		);
+
+		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(body);
+	}
+
+	// HTTP 404 - Not Found
+	@ExceptionHandler(NoResourceFoundException.class)
+	public ResponseEntity<Map<String, Object>> handleNotFound(
+			NoResourceFoundException ex,
+			HttpServletRequest request) {
+
+		Map<String, Object> body = Map.of(
+				"code", "NOT_FOUND",
+				"message", "Resource not found: " + request.getRequestURI(),
+				"path", request.getRequestURI()
+		);
+
+		return ResponseEntity.status(404).body(body);
+	}
+
+	// HTTP 415 - Unsupported Media Type
+	@ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+	public ResponseEntity<Map<String, Object>> handleUnsupportedMediaType(
+			HttpMediaTypeNotSupportedException ex,
+			HttpServletRequest request) {
+
+		Map<String, Object> body = Map.of(
+				"code", "UNSUPPORTED_MEDIA_TYPE",
+				"message", "Content-Type '" + ex.getContentType() + "' is not supported",
+				"path", request.getRequestURI()
+		);
+
+		return ResponseEntity.status(415).body(body);
+	}
 
 	// 공통 서브 모듈 예외 처리
 	@ExceptionHandler(DefaultException.class)
@@ -25,8 +74,8 @@ public class CommonExceptionHandler {
 				"path", request.getRequestURI()
 		);
 
-		// 상태코드는 Error 객체에서 가져오도록 구현 가능, 없으면 400
-		return ResponseEntity.status(400).body(body);
+		// 상태코드는 Error 객체에서 가져오도록 구현 가능, 없으면 500
+		return ResponseEntity.status(500).body(body);
 	}
 
 	// 필수 파라미터 누락 처리

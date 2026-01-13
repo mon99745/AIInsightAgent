@@ -10,10 +10,20 @@ common:
     version: "1.0"
     contact-email: "demo@exmple.com"
 
+  ### API 로깅 인터셉터 설정
+  api-logging:
+    enabled: true
+    include-paths:
+      - /api/**
+    exclude-paths:
+      - /api/docs/**
+      - /api/swagger-ui/**
+
 ### Spring 문서 관리
 springdoc:
   server:
-    url: https://localhost
+    url: http://localhost:28080
+#    url: https://localhost
     description: Dev server
   api-docs:
     enabled: true

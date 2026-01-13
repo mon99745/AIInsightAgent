@@ -38,5 +38,9 @@ out/
 .vscode/
 
 ### APP ###
+**/*.env
+**/*-cwd
 **/*-local.yml
 **/todo.md
+**/*_sample.txt
+
