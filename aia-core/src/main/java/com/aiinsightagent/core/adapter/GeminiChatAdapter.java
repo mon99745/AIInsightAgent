@@ -3,7 +3,6 @@ package com.aiinsightagent.core.adapter;
 import com.aiinsightagent.core.config.GeminiProperties;
 import com.aiinsightagent.core.model.TokenUsage;
 import com.aiinsightagent.core.util.GeminiTokenExtractor;
-import com.google.genai.Client;
 import com.google.genai.Models;
 import com.google.genai.types.GenerateContentResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +24,18 @@ public class GeminiChatAdapter {
 	 * @return response
 	 */
 	public GenerateContentResponse getResponse(String prompt) {
+		long startTime = System.currentTimeMillis();
+
 		GenerateContentResponse response = models.generateContent(
 				geminiProperties.getModel(),
 				prompt,
 				null
 		);
 
+		long duration = System.currentTimeMillis() - startTime;
 		TokenUsage tokenUsage = GeminiTokenExtractor.extract(response);
 
+		log.info("[Gemini Response] model={}, duration={}ms", geminiProperties.getModel(), duration);
 		log.debug(
 				"[Gemini Token Usage] prompt={}, completion={}, total={}",
 				tokenUsage.getPromptTokens(),
