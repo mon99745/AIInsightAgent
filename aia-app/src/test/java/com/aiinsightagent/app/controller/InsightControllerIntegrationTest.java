@@ -2,11 +2,11 @@ package com.aiinsightagent.app.controller;
 
 import com.aiinsightagent.app.TestApplication;
 import com.aiinsightagent.core.adapter.GeminiChatAdapter;
+import com.aiinsightagent.core.queue.GeminiQueueManager;
 import com.google.genai.Client;
 import com.google.genai.Models;
 import com.google.genai.types.GenerateContentResponse;
 import com.google.genai.types.GenerateContentResponseUsageMetadata;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import java.util.Optional;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,13 +63,16 @@ class InsightControllerIntegrationTest {
 	@Autowired
 	private AnalysisResultRepository analysisResultRepository;
 
-	@MockBean
+	@MockitoBean
 	private Client geminiClient;
 
-	@MockBean
+	@MockitoBean
 	private Models geminiModels;
 
-	@MockBean
+	@MockitoBean
+	private GeminiQueueManager geminiQueueManager;
+
+	@MockitoBean
 	private GeminiChatAdapter geminiChatAdapter;
 
 	private Actor actor;

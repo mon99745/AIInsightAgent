@@ -1,58 +1,94 @@
 package com.aiinsightagent.core.adapter;
 
-import com.aiinsightagent.core.config.GeminiProperties;
-import com.google.genai.Models;
+import com.aiinsightagent.core.exception.InsightError;
+import com.aiinsightagent.core.exception.InsightException;
+import com.aiinsightagent.core.queue.GeminiQueueManager;
 import com.google.genai.types.GenerateContentResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
 class GeminiChatAdapterTest {
 	private GeminiChatAdapter geminiChatAdapter;
-	private GeminiProperties geminiProperties;
-	private Models models;
+	private GeminiQueueManager queueManager;
 
 	@BeforeEach
 	void setUp() {
-		geminiProperties = Mockito.mock(GeminiProperties.class);
-		models = Mockito.mock(Models.class);
-
-		Mockito.when(geminiProperties.getModel())
-				.thenReturn("gemini-2.5-flash");
-
-		geminiChatAdapter = new GeminiChatAdapter(geminiProperties, models);
+		queueManager = Mockito.mock(GeminiQueueManager.class);
+		geminiChatAdapter = new GeminiChatAdapter(queueManager);
 	}
 
 	@Test
-	void getResponse_success() {
-
+	void getResponse_success() throws Exception {
 		// given
 		String prompt = "test prompt";
 		GenerateContentResponse mockResponse = Mockito.mock(GenerateContentResponse.class);
 
-		Mockito.when(
-				models.generateContent(
-						anyString(),
-						anyString(),
-						isNull()
-				)
-		).thenReturn(mockResponse);
+		Mockito.when(queueManager.submitAndWait(anyString()))
+				.thenReturn(mockResponse);
 
 		// when
-		GenerateContentResponse result =
-				geminiChatAdapter.getResponse(prompt);
+		GenerateContentResponse result = geminiChatAdapter.getResponse(prompt);
 
 		// then
 		assertNotNull(result);
 		assertEquals(mockResponse, result);
+		Mockito.verify(queueManager).submitAndWait(prompt);
+	}
 
-		Mockito.verify(models).generateContent(
-				"gemini-2.5-flash",
-				prompt,
-				null
+	@Test
+	void getResponse_timeout_throwsException() throws Exception {
+		// given
+		Mockito.when(queueManager.submitAndWait(anyString()))
+				.thenThrow(new TimeoutException("Timeout"));
+
+		// when & then
+		InsightException exception = assertThrows(InsightException.class,
+				() -> geminiChatAdapter.getResponse("test"));
+
+		assertEquals(InsightError.QUEUE_TIMEOUT, exception.getError());
+	}
+
+	@Test
+	void getResponse_queueFull_throwsException() throws Exception {
+		// given
+		ExecutionException executionException = new ExecutionException(
+				new RejectedExecutionException("Queue full")
 		);
+		Mockito.when(queueManager.submitAndWait(anyString()))
+				.thenThrow(executionException);
+
+		// when & then
+		InsightException exception = assertThrows(InsightException.class,
+				() -> geminiChatAdapter.getResponse("test"));
+
+		assertEquals(InsightError.QUEUE_FULL, exception.getError());
+	}
+
+	@Test
+	void getResponseAsync_success() {
+		// given
+		String prompt = "test prompt";
+		GenerateContentResponse mockResponse = Mockito.mock(GenerateContentResponse.class);
+		CompletableFuture<GenerateContentResponse> future = CompletableFuture.completedFuture(mockResponse);
+
+		Mockito.when(queueManager.submit(anyString()))
+				.thenReturn(future);
+
+		// when
+		CompletableFuture<GenerateContentResponse> result = geminiChatAdapter.getResponseAsync(prompt);
+
+		// then
+		assertNotNull(result);
+		assertTrue(result.isDone());
+		Mockito.verify(queueManager).submit(prompt);
 	}
 }

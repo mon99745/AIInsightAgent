@@ -5,10 +5,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 @Data
-@Component
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ConfigurationProperties(prefix = GeminiProperties.PROPERTY_PREFIX)
 public class GeminiProperties {

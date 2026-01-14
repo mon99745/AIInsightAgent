@@ -21,7 +21,11 @@ public enum InsightError
 	INTERNAL_SERVER_ERROR(InsightError.CODE_PREFIX + "02-00", "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
 	PROMPT_COMPOSITION_FAILURE(InsightError.CODE_PREFIX + "02-01", "Failed to convert Prompt to JSON string", HttpStatus.INTERNAL_SERVER_ERROR),
 	EMPTY_GEMINI_RESPONSE(InsightError.CODE_PREFIX + "02-02", "Gemini returned empty response", HttpStatus.INTERNAL_SERVER_ERROR),
-	FAIL_JSON_PARSING(InsightError.CODE_PREFIX + "02-03", "Failed to parse JSON", HttpStatus.INTERNAL_SERVER_ERROR);
+	FAIL_JSON_PARSING(InsightError.CODE_PREFIX + "02-03", "Failed to parse JSON", HttpStatus.INTERNAL_SERVER_ERROR),
+
+	QUEUE_FULL(InsightError.CODE_PREFIX + "03-01", "Request queue is full", HttpStatus.SERVICE_UNAVAILABLE),
+	QUEUE_TIMEOUT(InsightError.CODE_PREFIX + "03-02", "Request timed out in queue", HttpStatus.GATEWAY_TIMEOUT),
+	QUEUE_NOT_RUNNING(InsightError.CODE_PREFIX + "03-03", "Queue manager is not running", HttpStatus.SERVICE_UNAVAILABLE);
 
 	public static final String CODE_PREFIX = "AIAC-";
 
