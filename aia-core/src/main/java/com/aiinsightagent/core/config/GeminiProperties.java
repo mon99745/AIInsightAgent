@@ -45,4 +45,9 @@ public class GeminiProperties {
 	 * 완성 경로
 	 */
 	private String completionsPath;
+
+	/**
+	 * 최대 출력 토큰 수 (응답 속도에 영향)
+	 */
+	private Integer maxOutputTokens;
 }
