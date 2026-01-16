@@ -116,12 +116,9 @@ class InsightFacadeTest {
 		when(request.getPurpose()).thenReturn(purpose);
 		when(request.getUserPrompt()).thenReturn(userPrompts);
 
-		when(promptComposer.getCombinedUserPrompt(userPrompt1))
-				.thenReturn("PROMPT_1");
-		when(promptComposer.getCombinedUserPrompt(userPrompt2))
-				.thenReturn("PROMPT_2");
-
-		String combinedUserPrompt = "PROMPT_1\n\nPROMPT_2";
+		String combinedUserPrompt = "#1\ndata=value1\n\n#2\ndata=value2";
+		when(promptComposer.getCombinedUserPrompts(userPrompts))
+				.thenReturn(combinedUserPrompt);
 		String finalPrompt = "FINAL_ANALYSIS_PROMPT";
 
 		when(

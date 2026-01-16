@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,44 +46,60 @@ class PromptComposerTest {
 	}
 
 	@Test
-	@DisplayName("getCombinedUserPrompt - dataKey + data Map 결합 성공")
-	void getCombinedUserPrompt_success() {
+	@DisplayName("getCombinedUserPrompts - 복수 항목 순번 기반 결합 성공")
+	void getCombinedUserPrompts_success() {
 
 		// given
-		Map<String, String> data = new LinkedHashMap<>();
-		data.put("cpu_usage", "85%");
-		data.put("memory_usage", "70%");
+		Map<String, String> data1 = new LinkedHashMap<>();
+		data1.put("cpu_usage", "85%");
+		data1.put("memory_usage", "70%");
 
-		UserPrompt userPrompt = UserPrompt.builder()
-				.dataKey("SERVER_STATUS")
-				.data(data)
+		Map<String, String> data2 = new LinkedHashMap<>();
+		data2.put("cpu_usage", "60%");
+		data2.put("memory_usage", "50%");
+
+		UserPrompt userPrompt1 = UserPrompt.builder()
+				.dataKey("SERVER_1")
+				.data(data1)
+				.build();
+
+		UserPrompt userPrompt2 = UserPrompt.builder()
+				.dataKey("SERVER_2")
+				.data(data2)
 				.build();
 
 		// when
-		String result = promptComposer.getCombinedUserPrompt(userPrompt);
+		String result = promptComposer.getCombinedUserPrompts(List.of(userPrompt1, userPrompt2));
 
 		// then
 		String expected =
-				"[SERVER_STATUS]\n" +
-						"- cpu_usage: 85%\n" +
-						"- memory_usage: 70%";
+				"#1\n" +
+				"cpu_usage=85%\n" +
+				"memory_usage=70%\n\n" +
+				"#2\n" +
+				"cpu_usage=60%\n" +
+				"memory_usage=50%";
 
 		assertEquals(expected, result);
 	}
 
 	@Test
-	@DisplayName("getCombinedUserPrompt - dataKey만 존재하는 경우 성공")
-	void getCombinedUserPrompt_onlyDataKey() {
+	@DisplayName("getCombinedUserPrompts - 단일 항목 성공")
+	void getCombinedUserPrompts_singleItem() {
 
 		// given
+		Map<String, String> data = new LinkedHashMap<>();
+		data.put("value", "100");
+
 		UserPrompt userPrompt = UserPrompt.builder()
-				.dataKey("ONLY_KEY")
+				.dataKey("ITEM")
+				.data(data)
 				.build();
 
 		// when
-		String result = promptComposer.getCombinedUserPrompt(userPrompt);
+		String result = promptComposer.getCombinedUserPrompts(List.of(userPrompt));
 
 		// then
-		assertEquals("[ONLY_KEY]", result);
+		assertEquals("#1\nvalue=100", result);
 	}
 }
