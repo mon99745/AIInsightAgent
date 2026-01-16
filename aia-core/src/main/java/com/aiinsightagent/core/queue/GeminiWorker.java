@@ -4,6 +4,7 @@ import com.aiinsightagent.core.config.GeminiProperties;
 import com.aiinsightagent.core.model.TokenUsage;
 import com.aiinsightagent.core.util.GeminiTokenExtractor;
 import com.google.genai.Models;
+import com.google.genai.types.GenerateContentConfig;
 import com.google.genai.types.GenerateContentResponse;
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,10 +62,12 @@ public class GeminiWorker implements Runnable {
 		long startTime = System.currentTimeMillis();
 
 		try {
+			GenerateContentConfig config = buildConfig();
+
 			GenerateContentResponse response = models.generateContent(
 					geminiProperties.getModel(),
 					request.getPrompt(),
-					null
+					config
 			);
 
 			long duration = System.currentTimeMillis() - startTime;
@@ -81,5 +84,19 @@ public class GeminiWorker implements Runnable {
 			log.error("[{}] API call failed: {}", workerName, e.getMessage(), e);
 			request.getFuture().completeExceptionally(e);
 		}
+	}
+
+	private GenerateContentConfig buildConfig() {
+		GenerateContentConfig.Builder builder = GenerateContentConfig.builder();
+
+		if (geminiProperties.getMaxOutputTokens() != null) {
+			builder.maxOutputTokens(geminiProperties.getMaxOutputTokens());
+		}
+
+		if (geminiProperties.getTemperature() > 0) {
+			builder.temperature((float) geminiProperties.getTemperature());
+		}
+
+		return builder.build();
 	}
 }

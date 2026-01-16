@@ -53,8 +53,8 @@ public class GeminiQueueManager {
 			workerFutures.add(workerExecutor.submit(worker));
 		}
 
-		log.info("GeminiQueueManager initialized: workers={}, queueCapacity={}",
-				queueProperties.getWorkerCount(), queueProperties.getQueueCapacity());
+		log.info("GeminiQueueManager initialized: workers={}, queueCapacity={}, maxOutputTokens={}",
+				queueProperties.getWorkerCount(), queueProperties.getQueueCapacity(), geminiProperties.getMaxOutputTokens());
 	}
 
 	/**

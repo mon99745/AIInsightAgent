@@ -32,6 +32,9 @@ public class GeminiChatAdapter {
 			throw new InsightException(InsightError.QUEUE_TIMEOUT, e);
 		} catch (ExecutionException e) {
 			Throwable cause = e.getCause();
+			if (cause instanceof InsightException) {
+				throw (InsightException) cause;
+			}
 			if (cause instanceof RejectedExecutionException) {
 				throw new InsightException(InsightError.QUEUE_FULL, cause);
 			}

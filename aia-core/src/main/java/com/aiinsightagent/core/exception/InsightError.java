@@ -22,10 +22,13 @@ public enum InsightError
 	PROMPT_COMPOSITION_FAILURE(InsightError.CODE_PREFIX + "02-01", "Failed to convert Prompt to JSON string", HttpStatus.INTERNAL_SERVER_ERROR),
 	EMPTY_GEMINI_RESPONSE(InsightError.CODE_PREFIX + "02-02", "Gemini returned empty response", HttpStatus.INTERNAL_SERVER_ERROR),
 	FAIL_JSON_PARSING(InsightError.CODE_PREFIX + "02-03", "Failed to parse JSON", HttpStatus.INTERNAL_SERVER_ERROR),
+	RESPONSE_TRUNCATED(InsightError.CODE_PREFIX + "02-04", "Response truncated due to max output tokens limit. Increase max-output-tokens value.", HttpStatus.INTERNAL_SERVER_ERROR),
 
 	QUEUE_FULL(InsightError.CODE_PREFIX + "03-01", "Request queue is full", HttpStatus.SERVICE_UNAVAILABLE),
 	QUEUE_TIMEOUT(InsightError.CODE_PREFIX + "03-02", "Request timed out in queue", HttpStatus.GATEWAY_TIMEOUT),
-	QUEUE_NOT_RUNNING(InsightError.CODE_PREFIX + "03-03", "Queue manager is not running", HttpStatus.SERVICE_UNAVAILABLE);
+	QUEUE_NOT_RUNNING(InsightError.CODE_PREFIX + "03-03", "Queue manager is not running", HttpStatus.SERVICE_UNAVAILABLE),
+
+	GEMINI_RATE_LIMIT(InsightError.CODE_PREFIX + "04-01", "Gemini API rate limit exceeded", HttpStatus.TOO_MANY_REQUESTS);
 
 	public static final String CODE_PREFIX = "AIAC-";
 
