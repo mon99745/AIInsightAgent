@@ -31,3 +31,12 @@ spring:
       temperature: 0.7
       base-url: https://generativelanguage.com
       completions-path: v1beta2/models/{model}/completions
+      max-output-tokens: 4096
+
+aiinsight:
+  request:
+    queue:
+      worker-count: 10
+      queue-capacity: 100
+      request-timeout-seconds: 60
+      shutdown-timeout-seconds: 30

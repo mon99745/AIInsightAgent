@@ -2,11 +2,12 @@ package com.aiinsightagent.app.controller;
 
 import com.aiinsightagent.app.TestApplication;
 import com.aiinsightagent.core.adapter.GeminiChatAdapter;
+import com.aiinsightagent.core.queue.GeminiQueueManager;
 import com.google.genai.Client;
 import com.google.genai.Models;
+import com.google.genai.errors.ClientException;
 import com.google.genai.types.GenerateContentResponse;
 import com.google.genai.types.GenerateContentResponseUsageMetadata;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import java.util.Optional;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -26,6 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,13 +64,16 @@ class InsightControllerIntegrationTest {
 	@Autowired
 	private AnalysisResultRepository analysisResultRepository;
 
-	@MockBean
+	@MockitoBean
 	private Client geminiClient;
 
-	@MockBean
+	@MockitoBean
 	private Models geminiModels;
 
-	@MockBean
+	@MockitoBean
+	private GeminiQueueManager geminiQueueManager;
+
+	@MockitoBean
 	private GeminiChatAdapter geminiChatAdapter;
 
 	private Actor actor;
@@ -863,6 +868,109 @@ class InsightControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(request)))
 					.andDo(print());
+		}
+	}
+
+	@Nested
+	@DisplayName("429 Too Many Requests - Rate Limit 테스트")
+	class RateLimitTest {
+
+		@Test
+		@DisplayName("실패: Gemini API Rate Limit 초과 시 429 반환 (POST /api/v1/analysis)")
+		void analysis_RateLimitExceeded_Returns429() throws Exception {
+			// given
+			when(geminiChatAdapter.getResponse(anyString()))
+					.thenThrow(new ClientException(429, "Resource has been exhausted", "RATE_LIMIT_EXCEEDED"));
+
+			String requestBody = objectMapper.writeValueAsString(insightRequest);
+
+			// when & then
+			mockMvc.perform(post("/api/v1/analysis")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(requestBody))
+					.andDo(print())
+					.andExpect(status().isTooManyRequests())
+					.andExpect(jsonPath("$.code").value(429))
+					.andExpect(jsonPath("$.message").exists())
+					.andExpect(jsonPath("$.path").value("/api/v1/analysis"));
+		}
+
+		@Test
+		@DisplayName("실패: Gemini API Rate Limit 초과 시 429 반환 (GET /api/v1/answer)")
+		void answer_RateLimitExceeded_Returns429() throws Exception {
+			// given
+			when(geminiChatAdapter.getResponse(anyString()))
+					.thenThrow(new ClientException(429, "Resource has been exhausted", "RATE_LIMIT_EXCEEDED"));
+
+			// when & then
+			mockMvc.perform(get("/api/v1/answer")
+							.param("purpose", "test_analysis")
+							.param("prompt", "Test prompt"))
+					.andDo(print())
+					.andExpect(status().isTooManyRequests())
+					.andExpect(jsonPath("$.code").value(429))
+					.andExpect(jsonPath("$.message").exists())
+					.andExpect(jsonPath("$.path").value("/api/v1/answer"));
+		}
+
+		@Test
+		@DisplayName("실패: 연속 요청 시 Rate Limit 발생 시나리오")
+		void analysis_ConsecutiveRequests_RateLimitOccurs() throws Exception {
+			// given - 첫 번째 요청은 성공, 두 번째부터 Rate Limit
+			String mockJsonResponse = "{" +
+					"\"summary\": \"Test analysis summary\"," +
+					"\"issueCategories\": []," +
+					"\"rootCauseInsights\": []," +
+					"\"recommendedActions\": []," +
+					"\"priorityScore\": 50" +
+					"}";
+			GenerateContentResponse mockResponse = org.mockito.Mockito.mock(GenerateContentResponse.class);
+			when(mockResponse.text()).thenReturn(mockJsonResponse);
+			GenerateContentResponseUsageMetadata mockUsage = org.mockito.Mockito.mock(GenerateContentResponseUsageMetadata.class);
+			when(mockUsage.promptTokenCount()).thenReturn(Optional.of(100));
+			when(mockUsage.candidatesTokenCount()).thenReturn(Optional.of(50));
+			when(mockUsage.totalTokenCount()).thenReturn(Optional.of(150));
+			when(mockResponse.usageMetadata()).thenReturn(Optional.of(mockUsage));
+
+			when(geminiChatAdapter.getResponse(anyString()))
+					.thenReturn(mockResponse)  // 첫 번째 호출: 성공
+					.thenThrow(new ClientException(429, "Resource has been exhausted", "RATE_LIMIT_EXCEEDED"));  // 두 번째 호출: Rate Limit
+
+			String requestBody = objectMapper.writeValueAsString(insightRequest);
+
+			// when & then - 첫 번째 요청 성공
+			mockMvc.perform(post("/api/v1/analysis")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(requestBody))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value(200));
+
+			// when & then - 두 번째 요청 Rate Limit
+			mockMvc.perform(post("/api/v1/analysis")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(requestBody))
+					.andExpect(status().isTooManyRequests())
+					.andExpect(jsonPath("$.code").value(429));
+		}
+
+		@Test
+		@DisplayName("실패: Rate Limit 응답 메시지 검증")
+		void analysis_RateLimitMessage_ContainsDetails() throws Exception {
+			// given
+			String rateLimitMessage = "Quota exceeded for quota metric 'Generate Content API requests per minute'";
+			when(geminiChatAdapter.getResponse(anyString()))
+					.thenThrow(new ClientException(429, rateLimitMessage, "RATE_LIMIT_EXCEEDED"));
+
+			String requestBody = objectMapper.writeValueAsString(insightRequest);
+
+			// when & then
+			mockMvc.perform(post("/api/v1/analysis")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(requestBody))
+					.andDo(print())
+					.andExpect(status().isTooManyRequests())
+					.andExpect(jsonPath("$.code").value(429))
+					.andExpect(jsonPath("$.message").isNotEmpty());
 		}
 	}
 }

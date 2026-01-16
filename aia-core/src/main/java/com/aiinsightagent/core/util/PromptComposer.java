@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -46,26 +47,33 @@ public class PromptComposer {
 		return systemPrompt + "\n\n[CONTEXT]\n" + context;
 	}
 
-	public String getCombinedUserPrompt(UserPrompt userPrompt) {
-		if (userPrompt == null) {
+	public String getCombinedUserPrompts(List<UserPrompt> userPrompts) {
+		if (userPrompts == null || userPrompts.isEmpty()) {
 			throw new InsightException(InsightError.EMPTY_USER_PROMPT);
 		}
 
 		StringBuilder sb = new StringBuilder();
-
-		// 1. 데이터 키 (컨텍스트 식별자)
-		if (userPrompt.getDataKey() != null && !userPrompt.getDataKey().isBlank()) {
-			sb.append("[").append(userPrompt.getDataKey()).append("]")
-					.append("\n");
+		for (int i = 0; i < userPrompts.size(); i++) {
+			if (i > 0) {
+				sb.append("\n\n");
+			}
+			sb.append(formatUserPrompt(userPrompts.get(i), i + 1));
 		}
+		return sb.toString();
+	}
 
-		// 2. 데이터 본문
+	private String formatUserPrompt(UserPrompt userPrompt, int index) {
+		StringBuilder sb = new StringBuilder();
+
+		// 순번 기반 식별자 (#1, #2, ...)
+		sb.append("#").append(index).append("\n");
+
+		// 데이터 본문
 		Map<String, String> data = userPrompt.getData();
 		if (data != null && !data.isEmpty()) {
 			for (Map.Entry<String, String> entry : data.entrySet()) {
-				sb.append("- ")
-						.append(entry.getKey())
-						.append(": ")
+				sb.append(entry.getKey())
+						.append("=")
 						.append(entry.getValue())
 						.append("\n");
 			}

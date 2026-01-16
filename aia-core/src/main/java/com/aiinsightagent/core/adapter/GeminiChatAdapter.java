@@ -1,48 +1,60 @@
 package com.aiinsightagent.core.adapter;
 
-import com.aiinsightagent.core.config.GeminiProperties;
-import com.aiinsightagent.core.model.TokenUsage;
-import com.aiinsightagent.core.util.GeminiTokenExtractor;
-import com.google.genai.Models;
+import com.aiinsightagent.core.exception.InsightError;
+import com.aiinsightagent.core.exception.InsightException;
+import com.aiinsightagent.core.queue.GeminiQueueManager;
 import com.google.genai.types.GenerateContentResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeoutException;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class GeminiChatAdapter {
-	protected final GeminiProperties geminiProperties;
-	private final Models models;
+	private final GeminiQueueManager queueManager;
 
 	/**
-	 * Gemini Chat 응답 생성
-	 * https://aistudio.google.com/app/
+	 * 동기식 Gemini Chat 응답 생성 (기존 인터페이스 유지)
 	 *
-	 * @param prompt
-	 * @return response
+	 * @param prompt 프롬프트
+	 * @return GenerateContentResponse
 	 */
 	public GenerateContentResponse getResponse(String prompt) {
-		long startTime = System.currentTimeMillis();
+		try {
+			return queueManager.submitAndWait(prompt);
+		} catch (TimeoutException e) {
+			throw new InsightException(InsightError.QUEUE_TIMEOUT, e);
+		} catch (ExecutionException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof InsightException) {
+				throw (InsightException) cause;
+			}
+			if (cause instanceof RejectedExecutionException) {
+				throw new InsightException(InsightError.QUEUE_FULL, cause);
+			}
+			if (cause instanceof IllegalStateException) {
+				throw new InsightException(InsightError.QUEUE_NOT_RUNNING, cause);
+			}
+			throw new InsightException(InsightError.INTERNAL_SERVER_ERROR, cause);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new InsightException(InsightError.INTERNAL_SERVER_ERROR, e);
+		}
+	}
 
-		GenerateContentResponse response = models.generateContent(
-				geminiProperties.getModel(),
-				prompt,
-				null
-		);
-
-		long duration = System.currentTimeMillis() - startTime;
-		TokenUsage tokenUsage = GeminiTokenExtractor.extract(response);
-
-		log.info("[Gemini Response] model={}, duration={}ms", geminiProperties.getModel(), duration);
-		log.debug(
-				"[Gemini Token Usage] prompt={}, completion={}, total={}",
-				tokenUsage.getPromptTokens(),
-				tokenUsage.getCompletionTokens(),
-				tokenUsage.getTotalTokens()
-		);
-
-		return response;
+	/**
+	 * 비동기식 Gemini Chat 응답 생성
+	 *
+	 * @param prompt 프롬프트
+	 * @return CompletableFuture
+	 */
+	public CompletableFuture<GenerateContentResponse> getResponseAsync(String prompt) {
+		return queueManager.submit(prompt);
 	}
 }

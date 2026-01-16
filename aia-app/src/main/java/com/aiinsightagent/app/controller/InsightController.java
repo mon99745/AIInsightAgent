@@ -26,12 +26,6 @@ public class InsightController {
 	public static final String PATH = "/api/v1/";
 	private final InsightService insightService;
 
-	@Operation(summary = "Test Answer - 단건(DataKey 기준) 데이터 테스트용")
-	@GetMapping("answer")
-	public InsightResponse answer(@RequestParam String purpose, @RequestParam String prompt) {
-		return insightService.requestInsight(purpose, prompt);
-	}
-
 	@Operation(summary = "Data Analysis")
 	@PostMapping("analysis")
 	public InsightResponse analysis(@RequestBody InsightRequest data) {
@@ -42,5 +36,11 @@ public class InsightController {
 	@GetMapping("analysis/history")
 	public InsightHistoryResponse getHistory(@RequestParam String userId) {
 		return insightService.getHistory(userId);
+	}
+
+	@Operation(summary = "[테스트용] 단건(DataKey 기준) Data Analysis")
+	@GetMapping("answer")
+	public InsightResponse answer(@RequestParam String purpose, @RequestParam String prompt) {
+		return insightService.requestInsight(purpose, prompt);
 	}
 }

@@ -5,10 +5,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 @Data
-@Component
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ConfigurationProperties(prefix = GeminiProperties.PROPERTY_PREFIX)
 public class GeminiProperties {
@@ -47,4 +45,9 @@ public class GeminiProperties {
 	 * 완성 경로
 	 */
 	private String completionsPath;
+
+	/**
+	 * 최대 출력 토큰 수 (응답 속도에 영향)
+	 */
+	private Integer maxOutputTokens;
 }

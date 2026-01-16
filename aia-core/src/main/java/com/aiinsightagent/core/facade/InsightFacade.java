@@ -6,13 +6,10 @@ import com.aiinsightagent.core.util.PromptComposer;
 import com.aiinsightagent.core.model.InsightRequest;
 import com.aiinsightagent.core.model.InsightResponse;
 import com.aiinsightagent.core.model.prompt.SystemPrompt;
-import com.aiinsightagent.core.model.prompt.UserPrompt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,11 +31,7 @@ public class InsightFacade {
 	}
 
 	public InsightResponse analysis(InsightRequest request, String context) {
-		List<UserPrompt> userPrompts = request.getUserPrompt();
-
-		String combinedUserPrompt = userPrompts.stream()
-				.map(promptComposer::getCombinedUserPrompt)
-				.collect(Collectors.joining("\n\n"));
+		String combinedUserPrompt = promptComposer.getCombinedUserPrompts(request.getUserPrompt());
 
 		log.debug("Combined User Prompt:\n str-length={}", combinedUserPrompt.length());
 

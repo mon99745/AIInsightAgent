@@ -5,14 +5,19 @@ import com.aiinsightagent.app.entity.Actor;
 import com.aiinsightagent.app.entity.PreparedContext;
 import com.aiinsightagent.app.repository.ActorRepository;
 import com.aiinsightagent.app.repository.PreparedContextRepository;
+import com.aiinsightagent.core.adapter.GeminiChatAdapter;
 import com.aiinsightagent.core.model.Context;
+import com.aiinsightagent.core.queue.GeminiQueueManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.genai.Client;
+import com.google.genai.Models;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +48,18 @@ class ContextControllerIntegrationTest {
 
 	@Autowired
 	private PreparedContextRepository preparedContextRepository;
+
+	@MockitoBean
+	private Client geminiClient;
+
+	@MockitoBean
+	private Models geminiModels;
+
+	@MockitoBean
+	private GeminiQueueManager geminiQueueManager;
+
+	@MockitoBean
+	private GeminiChatAdapter geminiChatAdapter;
 
 	private Context context;
 	private Map<String, String> contextData;
