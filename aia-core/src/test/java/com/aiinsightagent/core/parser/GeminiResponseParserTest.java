@@ -30,7 +30,8 @@ class GeminiResponseParserTest {
 				  "issueCategories": [
 				    {
 				      "category": "성능",
-				      "description": "응답 시간이 느림"
+				      "description": "응답 시간이 느림",
+				      "severity": "HIGH"
 				    }
 				  ],
 				  "rootCauseInsights": ["네트워크 지연"],
