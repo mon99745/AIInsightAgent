@@ -19,14 +19,15 @@ public class AnalysisResultService {
 	private final AnalysisResultRepository resultRepository;
 	private final InsightResultSerializer serializer;
 
-	public AnalysisResult save(Actor actor, AnalysisRawData rawData, InsightResponse result) {
+	public AnalysisResult save(Actor actor, AnalysisRawData rawData, InsightResponse result, String analysisVersion) {
 		String resultPayload = serializer.serialize(result.getInsight());
 		AnalysisResult analysisResult = new AnalysisResult(
 				actor,
 				rawData,
 				AnalysisType.STYLE,
 				AnalysisStatus.SUCCESS,
-				resultPayload
+				resultPayload,
+				analysisVersion
 		);
 
 		return resultRepository.save(analysisResult);
