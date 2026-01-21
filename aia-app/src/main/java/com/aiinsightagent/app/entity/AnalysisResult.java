@@ -62,11 +62,12 @@ public class AnalysisResult {
 			AnalysisRawData analysisInput,
 			AnalysisType analysisType,
 			AnalysisStatus status,
-			String resultPayload
+			String resultPayload,
+			String analysisVersion
 	) {
 		this.requestId = UUID.randomUUID();
 		this.actor = actor;
-		this.analysisVersion = "v0.0.1";
+		this.analysisVersion = analysisVersion;
 		this.analysisInput = analysisInput;
 		this.analysisType = analysisType;
 		this.resultPayload = resultPayload;

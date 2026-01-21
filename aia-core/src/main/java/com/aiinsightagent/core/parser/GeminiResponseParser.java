@@ -5,6 +5,7 @@ import com.aiinsightagent.core.exception.InsightException;
 import com.aiinsightagent.core.model.InsightDetail;
 import com.aiinsightagent.core.model.InsightResponse;
 import com.aiinsightagent.core.preprocess.LlmJsonPreprocessor;
+import com.aiinsightagent.core.queue.GeminiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.genai.types.Candidate;
 import com.google.genai.types.FinishReason;
@@ -21,7 +22,9 @@ public class GeminiResponseParser {
 	private GeminiResponseParser() {
 	}
 
-	public static InsightResponse toInsightResponse(GenerateContentResponse response) {
+	public static InsightResponse toInsightResponse(GeminiResponse geminiResponse) {
+		GenerateContentResponse response = geminiResponse.getResponse();
+
 		// 응답 절단 여부 확인
 		checkResponseTruncation(response);
 
@@ -31,7 +34,7 @@ public class GeminiResponseParser {
 			throw new InsightException(InsightError.EMPTY_GEMINI_RESPONSE);
 		}
 
-		InsightDetail insightDetail = null;
+		InsightDetail insightDetail;
 		try {
 			insightDetail = objectMapper.readValue(pureJson, InsightDetail.class);
 		} catch (IOException e) {

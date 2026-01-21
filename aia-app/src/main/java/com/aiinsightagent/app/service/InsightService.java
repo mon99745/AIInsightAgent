@@ -4,6 +4,7 @@ import com.aiinsightagent.app.entity.Actor;
 import com.aiinsightagent.app.entity.AnalysisRawData;
 import com.aiinsightagent.app.entity.PreparedContext;
 import com.aiinsightagent.app.util.InsightRequestValidator;
+import com.aiinsightagent.core.context.GeminiContext;
 import com.aiinsightagent.core.facade.InsightFacade;
 import com.aiinsightagent.core.model.InsightHistoryResponse;
 import com.aiinsightagent.core.model.InsightRequest;
@@ -52,7 +53,9 @@ public class InsightService {
 		InsightResponse response = insightFacade.analysis(data, contextText);
 
 		// 6. 결과 저장
-		resultService.save(actor, rawData, response);
+		String analysisVersion = GeminiContext.getAnalysisVersion();
+		resultService.save(actor, rawData, response, analysisVersion);
+		GeminiContext.clear();
 
 		return response;
 	}

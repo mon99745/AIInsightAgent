@@ -79,7 +79,8 @@ class AnalysisResultServiceTest {
 				analysisRawData,
 				AnalysisType.STYLE,
 				AnalysisStatus.SUCCESS,
-				serializedResult
+				serializedResult,
+				"gemini-2.5-flash#00"
 		);
 		ReflectionTestUtils.setField(analysisResult, "resultId", 1L);
 		ReflectionTestUtils.setField(analysisResult, "requestId", UUID.randomUUID());
@@ -109,7 +110,7 @@ class AnalysisResultServiceTest {
 				.willReturn(analysisResult);
 
 		// when
-		AnalysisResult result = analysisResultService.save(actor, analysisRawData, insightResponse);
+		AnalysisResult result = analysisResultService.save(actor, analysisRawData, insightResponse, "gemini-2.5-flash#00");
 
 		// then
 		assertThat(result).isNotNull();
@@ -136,7 +137,7 @@ class AnalysisResultServiceTest {
 				.willReturn(analysisResult);
 
 		// when
-		analysisResultService.save(actor, analysisRawData, insightResponse);
+		analysisResultService.save(actor, analysisRawData, insightResponse, "gemini-2.5-flash#00");
 
 		// then
 		AnalysisResult capturedResult = captor.getValue();
@@ -169,7 +170,7 @@ class AnalysisResultServiceTest {
 				.willReturn(analysisResult);
 
 		// when
-		analysisResultService.save(actor, analysisRawData, customResponse);
+		analysisResultService.save(actor, analysisRawData, customResponse, "gemini-2.5-flash#00");
 
 		// then
 		verify(serializer, times(1)).serialize(customInsightDetail);
@@ -194,14 +195,15 @@ class AnalysisResultServiceTest {
 				analysisRawData,
 				AnalysisType.STYLE,
 				AnalysisStatus.SUCCESS,
-				null
+				null,
+				"gemini-2.5-flash#00"
 		);
 
 		given(resultRepository.save(any(AnalysisResult.class)))
 				.willReturn(nullPayloadResult);
 
 		// when
-		AnalysisResult result = analysisResultService.save(actor, analysisRawData, nullInsightResponse);
+		AnalysisResult result = analysisResultService.save(actor, analysisRawData, nullInsightResponse, "gemini-2.5-flash#00");
 
 		// then
 		assertThat(result).isNotNull();
@@ -229,7 +231,7 @@ class AnalysisResultServiceTest {
 				.willReturn(analysisResult);
 
 		// when
-		AnalysisResult result = analysisResultService.save(actor, analysisRawData, runningResponse);
+		AnalysisResult result = analysisResultService.save(actor, analysisRawData, runningResponse, "gemini-2.5-flash#00");
 
 		// then
 		assertThat(result).isNotNull();
@@ -255,12 +257,12 @@ class AnalysisResultServiceTest {
 		ReflectionTestUtils.setField(rawData2, "inputId", 2L);
 
 		AnalysisResult result1 = new AnalysisResult(
-				actor1, rawData1, AnalysisType.STYLE, AnalysisStatus.SUCCESS, serializedResult
+				actor1, rawData1, AnalysisType.STYLE, AnalysisStatus.SUCCESS, serializedResult, "gemini-2.5-flash#00"
 		);
 		ReflectionTestUtils.setField(result1, "resultId", 1L);
 
 		AnalysisResult result2 = new AnalysisResult(
-				actor2, rawData2, AnalysisType.STYLE, AnalysisStatus.SUCCESS, serializedResult
+				actor2, rawData2, AnalysisType.STYLE, AnalysisStatus.SUCCESS, serializedResult, "gemini-2.5-flash#00"
 		);
 		ReflectionTestUtils.setField(result2, "resultId", 2L);
 
@@ -271,8 +273,8 @@ class AnalysisResultServiceTest {
 				.willReturn(result2);
 
 		// when
-		AnalysisResult savedResult1 = analysisResultService.save(actor1, rawData1, insightResponse);
-		AnalysisResult savedResult2 = analysisResultService.save(actor2, rawData2, insightResponse);
+		AnalysisResult savedResult1 = analysisResultService.save(actor1, rawData1, insightResponse, "gemini-2.5-flash#00");
+		AnalysisResult savedResult2 = analysisResultService.save(actor2, rawData2, insightResponse, "gemini-2.5-flash#00");
 
 		// then
 		assertThat(savedResult1.getResultId()).isEqualTo(1L);
@@ -293,14 +295,15 @@ class AnalysisResultServiceTest {
 				analysisRawData,
 				AnalysisType.STYLE,
 				AnalysisStatus.SUCCESS,
-				""
+				"",
+				"gemini-2.5-flash#00"
 		);
 
 		given(resultRepository.save(any(AnalysisResult.class)))
 				.willReturn(emptyPayloadResult);
 
 		// when
-		AnalysisResult result = analysisResultService.save(actor, analysisRawData, insightResponse);
+		AnalysisResult result = analysisResultService.save(actor, analysisRawData, insightResponse, "gemini-2.5-flash#00");
 
 		// then
 		assertThat(result).isNotNull();
@@ -321,7 +324,7 @@ class AnalysisResultServiceTest {
 				.willReturn(analysisResult);
 
 		// when
-		analysisResultService.save(actor, analysisRawData, insightResponse);
+		analysisResultService.save(actor, analysisRawData, insightResponse, "gemini-2.5-flash#00");
 
 		// then
 		AnalysisResult capturedResult = captor.getValue();
@@ -341,7 +344,7 @@ class AnalysisResultServiceTest {
 				.willReturn(analysisResult);
 
 		// when
-		analysisResultService.save(actor, analysisRawData, insightResponse);
+		analysisResultService.save(actor, analysisRawData, insightResponse, "gemini-2.5-flash#00");
 
 		// then
 		AnalysisResult capturedResult = captor.getValue();
@@ -354,14 +357,14 @@ class AnalysisResultServiceTest {
 	void save_MultipleSavesGenerateDifferentRequestIds() {
 		// given
 		AnalysisResult result1 = new AnalysisResult(
-				actor, analysisRawData, AnalysisType.STYLE, AnalysisStatus.SUCCESS, serializedResult
+				actor, analysisRawData, AnalysisType.STYLE, AnalysisStatus.SUCCESS, serializedResult, "gemini-2.5-flash#00"
 		);
 		UUID requestId1 = UUID.randomUUID();
 		ReflectionTestUtils.setField(result1, "resultId", 1L);
 		ReflectionTestUtils.setField(result1, "requestId", requestId1);
 
 		AnalysisResult result2 = new AnalysisResult(
-				actor, analysisRawData, AnalysisType.STYLE, AnalysisStatus.SUCCESS, serializedResult
+				actor, analysisRawData, AnalysisType.STYLE, AnalysisStatus.SUCCESS, serializedResult, "gemini-2.5-flash#00"
 		);
 		UUID requestId2 = UUID.randomUUID();
 		ReflectionTestUtils.setField(result2, "resultId", 2L);
@@ -374,8 +377,8 @@ class AnalysisResultServiceTest {
 				.willReturn(result2);
 
 		// when
-		AnalysisResult savedResult1 = analysisResultService.save(actor, analysisRawData, insightResponse);
-		AnalysisResult savedResult2 = analysisResultService.save(actor, analysisRawData, insightResponse);
+		AnalysisResult savedResult1 = analysisResultService.save(actor, analysisRawData, insightResponse, "gemini-2.5-flash#00");
+		AnalysisResult savedResult2 = analysisResultService.save(actor, analysisRawData, insightResponse, "gemini-2.5-flash#00");
 
 		// then
 		assertThat(savedResult1.getResultId()).isEqualTo(1L);
@@ -410,7 +413,7 @@ class AnalysisResultServiceTest {
 				.willReturn(analysisResult);
 
 		// when
-		AnalysisResult result = analysisResultService.save(actor, analysisRawData, largeResponse);
+		AnalysisResult result = analysisResultService.save(actor, analysisRawData, largeResponse, "gemini-2.5-flash#00");
 
 		// then
 		assertThat(result).isNotNull();
@@ -436,7 +439,7 @@ class AnalysisResultServiceTest {
 				.willReturn(analysisResult);
 
 		// when
-		analysisResultService.save(actor, analysisRawData, responseWithCodes);
+		analysisResultService.save(actor, analysisRawData, responseWithCodes, "gemini-2.5-flash#00");
 
 		// then
 		AnalysisResult capturedResult = captor.getValue();
