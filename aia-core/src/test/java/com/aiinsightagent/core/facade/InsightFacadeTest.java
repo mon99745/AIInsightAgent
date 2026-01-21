@@ -6,6 +6,7 @@ import com.aiinsightagent.core.model.InsightResponse;
 import com.aiinsightagent.core.model.prompt.SystemPrompt;
 import com.aiinsightagent.core.model.prompt.UserPrompt;
 import com.aiinsightagent.core.parser.GeminiResponseParser;
+import com.aiinsightagent.core.queue.GeminiResponse;
 import com.aiinsightagent.core.util.PromptComposer;
 import com.google.genai.types.GenerateContentResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +50,8 @@ class InsightFacadeTest {
 		String userPrompt = "이 문장을 요약해줘";
 		String finalPrompt = "FINAL_PROMPT";
 
-		GenerateContentResponse geminiResponse = mock(GenerateContentResponse.class);
+		GenerateContentResponse mockContentResponse = mock(GenerateContentResponse.class);
+		GeminiResponse geminiResponse = new GeminiResponse(mockContentResponse, "m01", "gemini-2.5-flash");
 
 		InsightResponse expectedResponse =
 				mock(InsightResponse.class);
@@ -130,7 +132,8 @@ class InsightFacadeTest {
 				)
 		).thenReturn(finalPrompt);
 
-		GenerateContentResponse geminiResponse = mock(GenerateContentResponse.class);
+		GenerateContentResponse mockContentResponse = mock(GenerateContentResponse.class);
+		GeminiResponse geminiResponse = new GeminiResponse(mockContentResponse, "m01", "gemini-2.5-flash");
 
 		InsightResponse expectedResponse = mock(InsightResponse.class);
 

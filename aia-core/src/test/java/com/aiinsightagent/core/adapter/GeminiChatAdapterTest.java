@@ -3,6 +3,7 @@ package com.aiinsightagent.core.adapter;
 import com.aiinsightagent.core.exception.InsightError;
 import com.aiinsightagent.core.exception.InsightException;
 import com.aiinsightagent.core.queue.GeminiQueueManager;
+import com.aiinsightagent.core.queue.GeminiResponse;
 import com.google.genai.types.GenerateContentResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,13 +31,14 @@ class GeminiChatAdapterTest {
 	void getResponse_success() throws Exception {
 		// given
 		String prompt = "test prompt";
-		GenerateContentResponse mockResponse = Mockito.mock(GenerateContentResponse.class);
+		GenerateContentResponse mockContentResponse = Mockito.mock(GenerateContentResponse.class);
+		GeminiResponse mockResponse = new GeminiResponse(mockContentResponse, "m01", "gemini-2.5-flash");
 
 		Mockito.when(queueManager.submitAndWait(anyString()))
 				.thenReturn(mockResponse);
 
 		// when
-		GenerateContentResponse result = geminiChatAdapter.getResponse(prompt);
+		GeminiResponse result = geminiChatAdapter.getResponse(prompt);
 
 		// then
 		assertNotNull(result);
@@ -77,14 +79,15 @@ class GeminiChatAdapterTest {
 	void getResponseAsync_success() {
 		// given
 		String prompt = "test prompt";
-		GenerateContentResponse mockResponse = Mockito.mock(GenerateContentResponse.class);
-		CompletableFuture<GenerateContentResponse> future = CompletableFuture.completedFuture(mockResponse);
+		GenerateContentResponse mockContentResponse = Mockito.mock(GenerateContentResponse.class);
+		GeminiResponse mockResponse = new GeminiResponse(mockContentResponse, "m01", "gemini-2.5-flash");
+		CompletableFuture<GeminiResponse> future = CompletableFuture.completedFuture(mockResponse);
 
 		Mockito.when(queueManager.submit(anyString()))
 				.thenReturn(future);
 
 		// when
-		CompletableFuture<GenerateContentResponse> result = geminiChatAdapter.getResponseAsync(prompt);
+		CompletableFuture<GeminiResponse> result = geminiChatAdapter.getResponseAsync(prompt);
 
 		// then
 		assertNotNull(result);

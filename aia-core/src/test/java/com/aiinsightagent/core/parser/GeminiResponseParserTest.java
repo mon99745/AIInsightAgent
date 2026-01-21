@@ -1,6 +1,7 @@
 package com.aiinsightagent.core.parser;
 
 import com.aiinsightagent.core.model.InsightResponse;
+import com.aiinsightagent.core.queue.GeminiResponse;
 import com.google.genai.types.GenerateContentResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ class GeminiResponseParserTest {
 	void toInsightResponse_success() {
 
 		// given
-		GenerateContentResponse response = mock(GenerateContentResponse.class);
+		GenerateContentResponse contentResponse = mock(GenerateContentResponse.class);
 
 		String rawResponse = """
 				```json
@@ -41,10 +42,11 @@ class GeminiResponseParserTest {
 				```
 				""";
 
-		when(response.text()).thenReturn(rawResponse);
+		when(contentResponse.text()).thenReturn(rawResponse);
+		GeminiResponse geminiResponse = new GeminiResponse(contentResponse, "m01", "gemini-2.5-flash");
 
 		// when
-		InsightResponse result = GeminiResponseParser.toInsightResponse(response);
+		InsightResponse result = GeminiResponseParser.toInsightResponse(geminiResponse);
 
 		// then
 		assertNotNull(result);
@@ -58,6 +60,6 @@ class GeminiResponseParserTest {
 		assertEquals("성능", result.getInsight().getIssueCategories().get(0).getCategory()
 		);
 
-		verify(response, times(1)).text();
+		verify(contentResponse, times(1)).text();
 	}
 }
