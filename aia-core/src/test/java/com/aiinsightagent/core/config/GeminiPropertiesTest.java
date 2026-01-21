@@ -17,10 +17,10 @@ class GeminiPropertiesTest {
 		return constructor.newInstance();
 	}
 
-	private GeminiProperties.ModelConfig createModelConfig(String id, String name, String apiKey) {
+	private GeminiProperties.ModelConfig createModelConfig(String id, String apiKey) {
 		GeminiProperties.ModelConfig config = new GeminiProperties.ModelConfig();
 		config.setId(id);
-		config.setName(name);
+		config.setName("gemini-2.5-flash");
 		config.setApiKey(apiKey);
 		return config;
 	}
@@ -32,12 +32,12 @@ class GeminiPropertiesTest {
 		// given
 		GeminiProperties properties = createGeminiProperties();
 		properties.setModels(Arrays.asList(
-				createModelConfig("m00", "gemini-2.5-flash", "key1"),
-				createModelConfig("m01", "gemini-2.5-flash", ""),
-				createModelConfig("m02", "gemini-2.5-flash", "key2"),
-				createModelConfig("m03", "gemini-2.5-flash", null),
-				createModelConfig("m04", "gemini-2.5-flash", "   "),
-				createModelConfig("m05", "gemini-2.5-flash", "key3")
+				createModelConfig("m00", "key1"),
+				createModelConfig("m01", ""),
+				createModelConfig("m02", "key2"),
+				createModelConfig("m03", null),
+				createModelConfig("m04", "   "),
+				createModelConfig("m05", "key3")
 		));
 
 		// when
@@ -57,11 +57,11 @@ class GeminiPropertiesTest {
 		// given
 		GeminiProperties properties = createGeminiProperties();
 		properties.setModels(Arrays.asList(
-				createModelConfig("m00", "gemini-2.5-flash", "key0"),
-				createModelConfig("m01", "gemini-2.5-flash", "key1"),
-				createModelConfig("m02", "gemini-2.5-flash", "key2"),
-				createModelConfig("m03", "gemini-2.5-flash", "key3"),
-				createModelConfig("m04", "gemini-2.5-flash", "key4")
+				createModelConfig("m00", "key0"),
+				createModelConfig("m01", "key1"),
+				createModelConfig("m02", "key2"),
+				createModelConfig("m03", "key3"),
+				createModelConfig("m04", "key4")
 		));
 
 		// when
@@ -92,9 +92,9 @@ class GeminiPropertiesTest {
 		// given
 		GeminiProperties properties = createGeminiProperties();
 		properties.setModels(Arrays.asList(
-				createModelConfig("m00", "gemini-2.5-flash", ""),
-				createModelConfig("m01", "gemini-2.5-flash", "first-valid-key"),
-				createModelConfig("m02", "gemini-2.5-flash", "second-key")
+				createModelConfig("m00", ""),
+				createModelConfig("m01", "first-valid-key"),
+				createModelConfig("m02", "second-key")
 		));
 
 		// when
@@ -111,9 +111,9 @@ class GeminiPropertiesTest {
 		// given
 		GeminiProperties properties = createGeminiProperties();
 		properties.setModels(Arrays.asList(
-				createModelConfig("m00", "gemini-2.5-flash", ""),
-				createModelConfig("m01", "gemini-2.5-flash", null),
-				createModelConfig("m02", "gemini-2.5-flash", "   ")
+				createModelConfig("m00", ""),
+				createModelConfig("m01", null),
+				createModelConfig("m02", "   ")
 		));
 
 		// when
@@ -130,16 +130,16 @@ class GeminiPropertiesTest {
 		// given
 		GeminiProperties properties = createGeminiProperties();
 		properties.setModels(Arrays.asList(
-				createModelConfig("m00", "gemini-2.5-flash", "key0"),
-				createModelConfig("m01", "gemini-2.5-flash", "key1"),
-				createModelConfig("m02", "gemini-2.5-flash", "key2"),
-				createModelConfig("m03", "gemini-2.5-flash", "key3"),
-				createModelConfig("m04", "gemini-2.5-flash", "key4"),
-				createModelConfig("m05", "gemini-2.5-flash", "key5"),
-				createModelConfig("m06", "gemini-2.5-flash", "key6"),
-				createModelConfig("m07", "gemini-2.5-flash", "key7"),
-				createModelConfig("m08", "gemini-2.5-flash", "key8"),
-				createModelConfig("m09", "gemini-2.5-flash", "key9")
+				createModelConfig("m00", "key0"),
+				createModelConfig("m01", "key1"),
+				createModelConfig("m02", "key2"),
+				createModelConfig("m03", "key3"),
+				createModelConfig("m04", "key4"),
+				createModelConfig("m05", "key5"),
+				createModelConfig("m06", "key6"),
+				createModelConfig("m07", "key7"),
+				createModelConfig("m08", "key8"),
+				createModelConfig("m09", "key9")
 		));
 
 		// when

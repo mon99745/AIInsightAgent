@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -131,10 +132,6 @@ public class GeminiQueueManager {
 		log.info("GeminiQueueManager shutdown complete");
 	}
 
-	public int getQueueSize() {
-		return requestQueue.size();
-	}
-
 	public int getWorkerCount() {
 		return queueProperties.getWorkerCount();
 	}
@@ -147,7 +144,7 @@ public class GeminiQueueManager {
 		private int counter = 0;
 
 		@Override
-		public Thread newThread(Runnable r) {
+		public Thread newThread(@NonNull Runnable r) {
 			Thread thread = new Thread(r, "gemini-worker-" + counter++);
 			thread.setDaemon(false);
 			return thread;

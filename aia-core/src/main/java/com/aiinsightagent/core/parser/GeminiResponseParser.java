@@ -34,7 +34,7 @@ public class GeminiResponseParser {
 			throw new InsightException(InsightError.EMPTY_GEMINI_RESPONSE);
 		}
 
-		InsightDetail insightDetail = null;
+		InsightDetail insightDetail;
 		try {
 			insightDetail = objectMapper.readValue(pureJson, InsightDetail.class);
 		} catch (IOException e) {

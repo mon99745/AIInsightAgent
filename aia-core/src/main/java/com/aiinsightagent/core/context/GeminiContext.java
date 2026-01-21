@@ -15,14 +15,6 @@ public class GeminiContext {
         MODEL_NAME.set(modelName);
     }
 
-    public static String getModelId() {
-        return MODEL_ID.get();
-    }
-
-    public static String getModelName() {
-        return MODEL_NAME.get();
-    }
-
     public static void clear() {
         MODEL_ID.remove();
         MODEL_NAME.remove();

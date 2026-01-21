@@ -77,12 +77,9 @@ class InsightControllerIntegrationTest {
 	@MockitoBean
 	private GeminiChatAdapter geminiChatAdapter;
 
-	private Actor actor;
-	private PreparedContext preparedContext;
-	private InsightRequest insightRequest;
-	private List<UserPrompt> userPrompts;
+    private InsightRequest insightRequest;
 
-	@BeforeEach
+    @BeforeEach
 	void setUp() {
 		// Mock GeminiChatAdapter
 		String mockJsonResponse = "{" +
@@ -108,7 +105,7 @@ class InsightControllerIntegrationTest {
 		actorRepository.deleteAll();
 
 		// Actor 생성 및 저장
-		actor = Actor.create("test-user");
+        Actor actor = Actor.create("test-user");
 		actorRepository.save(actor);
 
 		// PreparedContext 생성 및 저장
@@ -117,7 +114,7 @@ class InsightControllerIntegrationTest {
 		contextData.put("totalDistance", "100km");
 		contextData.put("runningDays", "30");
 
-		preparedContext = new PreparedContext(actor, "running_history", contextData.toString());
+        PreparedContext preparedContext = new PreparedContext(actor, "running_history", contextData.toString());
 		preparedContextRepository.save(preparedContext);
 
 		// UserPrompt 생성
@@ -130,7 +127,7 @@ class InsightControllerIntegrationTest {
 				.data(promptData)
 				.build();
 
-		userPrompts = List.of(userPrompt);
+        List<UserPrompt> userPrompts = List.of(userPrompt);
 
 		// InsightRequest 생성
 		insightRequest = InsightRequest.builder()
