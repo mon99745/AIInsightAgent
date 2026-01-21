@@ -1,6 +1,5 @@
 package com.aiinsightagent.core.queue;
 
-import com.google.genai.types.GenerateContentResponse;
 import lombok.Getter;
 
 import java.util.concurrent.CompletableFuture;
@@ -11,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 @Getter
 public class GeminiRequest {
 	private final String prompt;
-	private final CompletableFuture<GenerateContentResponse> future;
+	private final CompletableFuture<GeminiResponse> future;
 	private final long createdAt;
 
 	public GeminiRequest(String prompt) {

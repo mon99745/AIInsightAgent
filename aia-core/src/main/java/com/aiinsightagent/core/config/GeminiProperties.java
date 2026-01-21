@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ConfigurationProperties(prefix = GeminiProperties.PROPERTY_PREFIX)
@@ -22,14 +25,37 @@ public class GeminiProperties {
 	private static GeminiProperties instance = new GeminiProperties();
 
 	/**
-	 * API 키
+	 * 모델 설정 목록
 	 */
-	private String apiKey;
+	private List<ModelConfig> models = new ArrayList<>();
 
 	/**
-	 * 모델 명
+	 * 모델 설정 클래스
 	 */
-	private String model;
+	@Data
+	@NoArgsConstructor
+	public static class ModelConfig {
+		private String id;
+		private String name;
+		private String apiKey;
+	}
+
+	/**
+	 * 유효한 모델 설정 목록 반환 (API 키가 비어있지 않은 것만)
+	 */
+	public List<ModelConfig> getValidModels() {
+		return models.stream()
+				.filter(model -> model.getApiKey() != null && !model.getApiKey().isBlank())
+				.toList();
+	}
+
+	/**
+	 * 첫 번째 유효한 API 키 반환 (호환성 유지)
+	 */
+	public String getApiKey() {
+		List<ModelConfig> validModels = getValidModels();
+		return validModels.isEmpty() ? null : validModels.get(0).getApiKey();
+	}
 
 	/**
 	 * 온도 설정

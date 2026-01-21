@@ -1,9 +1,10 @@
 package com.aiinsightagent.core.adapter;
 
+import com.aiinsightagent.core.context.GeminiContext;
 import com.aiinsightagent.core.exception.InsightError;
 import com.aiinsightagent.core.exception.InsightException;
 import com.aiinsightagent.core.queue.GeminiQueueManager;
-import com.google.genai.types.GenerateContentResponse;
+import com.aiinsightagent.core.queue.GeminiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,14 +21,16 @@ public class GeminiChatAdapter {
 	private final GeminiQueueManager queueManager;
 
 	/**
-	 * 동기식 Gemini Chat 응답 생성 (기존 인터페이스 유지)
+	 * 동기식 Gemini Chat 응답 생성
 	 *
 	 * @param prompt 프롬프트
-	 * @return GenerateContentResponse
+	 * @return GeminiResponse
 	 */
-	public GenerateContentResponse getResponse(String prompt) {
+	public GeminiResponse getResponse(String prompt) {
 		try {
-			return queueManager.submitAndWait(prompt);
+			GeminiResponse response = queueManager.submitAndWait(prompt);
+			GeminiContext.setModelInfo(response.getModelId(), response.getModelName());
+			return response;
 		} catch (TimeoutException e) {
 			throw new InsightException(InsightError.QUEUE_TIMEOUT, e);
 		} catch (ExecutionException e) {
@@ -54,7 +57,7 @@ public class GeminiChatAdapter {
 	 * @param prompt 프롬프트
 	 * @return CompletableFuture
 	 */
-	public CompletableFuture<GenerateContentResponse> getResponseAsync(String prompt) {
+	public CompletableFuture<GeminiResponse> getResponseAsync(String prompt) {
 		return queueManager.submit(prompt);
 	}
 }

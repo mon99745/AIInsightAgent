@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class GeminiWorker implements Runnable {
 	private final String workerName;
+	private final GeminiProperties.ModelConfig modelConfig;
 	private final BlockingQueue<GeminiRequest> requestQueue;
 	private final Models models;
 	private final GeminiProperties geminiProperties;
@@ -25,12 +26,14 @@ public class GeminiWorker implements Runnable {
 
 	public GeminiWorker(
 			String workerName,
+			GeminiProperties.ModelConfig modelConfig,
 			BlockingQueue<GeminiRequest> requestQueue,
 			Models models,
 			GeminiProperties geminiProperties,
 			AtomicBoolean running
 	) {
 		this.workerName = workerName;
+		this.modelConfig = modelConfig;
 		this.requestQueue = requestQueue;
 		this.models = models;
 		this.geminiProperties = geminiProperties;
@@ -65,7 +68,7 @@ public class GeminiWorker implements Runnable {
 			GenerateContentConfig config = buildConfig();
 
 			GenerateContentResponse response = models.generateContent(
-					geminiProperties.getModel(),
+					modelConfig.getName(),
 					request.getPrompt(),
 					config
 			);
@@ -73,13 +76,13 @@ public class GeminiWorker implements Runnable {
 			long duration = System.currentTimeMillis() - startTime;
 			TokenUsage tokenUsage = GeminiTokenExtractor.extract(response);
 
-			log.info("[{}] model={}, waitTime={}ms, apiTime={}ms",
-					workerName, geminiProperties.getModel(), waitTime, duration);
+			log.info("[{}] modelId={}, model={}, waitTime={}ms, apiTime={}ms",
+					workerName, modelConfig.getId(), modelConfig.getName(), waitTime, duration);
 			log.debug("[{}] tokens: prompt={}, completion={}, total={}",
 					workerName, tokenUsage.getPromptTokens(),
 					tokenUsage.getCompletionTokens(), tokenUsage.getTotalTokens());
 
-			request.getFuture().complete(response);
+			request.getFuture().complete(new GeminiResponse(response, modelConfig.getId(), modelConfig.getName()));
 		} catch (Exception e) {
 			log.error("[{}] API call failed: {}", workerName, e.getMessage(), e);
 			request.getFuture().completeExceptionally(e);

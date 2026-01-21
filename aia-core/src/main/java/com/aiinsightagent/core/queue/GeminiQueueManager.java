@@ -3,7 +3,6 @@ package com.aiinsightagent.core.queue;
 import com.aiinsightagent.core.config.GeminiProperties;
 import com.aiinsightagent.core.config.RequestQueueProperties;
 import com.google.genai.Models;
-import com.google.genai.types.GenerateContentResponse;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 @RequiredArgsConstructor
 public class GeminiQueueManager {
-	private final Models models;
+	private final List<Models> geminiModelsList;
 	private final GeminiProperties geminiProperties;
 	private final RequestQueueProperties queueProperties;
 
@@ -41,28 +40,36 @@ public class GeminiQueueManager {
 
 		running.set(true);
 
+		List<GeminiProperties.ModelConfig> validModels = geminiProperties.getValidModels();
+		int modelCount = validModels.size();
 		for (int i = 0; i < queueProperties.getWorkerCount(); i++) {
 			String workerName = "gemini-worker-" + i;
+			// 워커별로 다른 모델 설정 할당 (순환 방식)
+			int modelIndex = i % modelCount;
+			GeminiProperties.ModelConfig modelConfig = validModels.get(modelIndex);
+			Models assignedModels = geminiModelsList.get(modelIndex);
 			GeminiWorker worker = new GeminiWorker(
 					workerName,
+					modelConfig,
 					requestQueue,
-					models,
+					assignedModels,
 					geminiProperties,
 					running
 			);
 			workerFutures.add(workerExecutor.submit(worker));
+			log.debug("[{}] assigned model: id={}, name={}", workerName, modelConfig.getId(), modelConfig.getName());
 		}
 
-		log.info("GeminiQueueManager initialized: workers={}, queueCapacity={}, maxOutputTokens={}",
-				queueProperties.getWorkerCount(), queueProperties.getQueueCapacity(), geminiProperties.getMaxOutputTokens());
+		log.info("GeminiQueueManager initialized: workers={}, model-count={}, queueCapacity={}",
+				queueProperties.getWorkerCount(), modelCount, queueProperties.getQueueCapacity());
 	}
 
 	/**
 	 * 요청을 큐에 제출하고 CompletableFuture 반환
 	 */
-	public CompletableFuture<GenerateContentResponse> submit(String prompt) {
+	public CompletableFuture<GeminiResponse> submit(String prompt) {
 		if (!running.get()) {
-			CompletableFuture<GenerateContentResponse> future = new CompletableFuture<>();
+			CompletableFuture<GeminiResponse> future = new CompletableFuture<>();
 			future.completeExceptionally(
 					new IllegalStateException("GeminiQueueManager is not running")
 			);
@@ -85,7 +92,7 @@ public class GeminiQueueManager {
 	/**
 	 * 동기식 호출 (기존 인터페이스 호환)
 	 */
-	public GenerateContentResponse submitAndWait(String prompt)
+	public GeminiResponse submitAndWait(String prompt)
 			throws ExecutionException, InterruptedException, TimeoutException {
 		return submit(prompt).get(
 				queueProperties.getRequestTimeoutSeconds(),
