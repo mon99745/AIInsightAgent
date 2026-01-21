@@ -3,6 +3,7 @@ package com.aiinsightagent.app.controller;
 import com.aiinsightagent.app.TestApplication;
 import com.aiinsightagent.core.adapter.GeminiChatAdapter;
 import com.aiinsightagent.core.queue.GeminiQueueManager;
+import com.aiinsightagent.core.queue.GeminiResponse;
 import com.google.genai.Client;
 import com.google.genai.Models;
 import com.google.genai.errors.ClientException;
@@ -98,7 +99,8 @@ class InsightControllerIntegrationTest {
 		when(mockUsage.candidatesTokenCount()).thenReturn(Optional.of(50));
 		when(mockUsage.totalTokenCount()).thenReturn(Optional.of(150));
 		when(mockResponse.usageMetadata()).thenReturn(Optional.of(mockUsage));
-		when(geminiChatAdapter.getResponse(anyString())).thenReturn(mockResponse);
+		GeminiResponse geminiResponse = new GeminiResponse(mockResponse, "m01", "gemini-2.5-flash");
+		when(geminiChatAdapter.getResponse(anyString())).thenReturn(geminiResponse);
 
 		// 테스트 데이터 초기화
 		analysisResultRepository.deleteAll();
@@ -931,9 +933,10 @@ class InsightControllerIntegrationTest {
 			when(mockUsage.candidatesTokenCount()).thenReturn(Optional.of(50));
 			when(mockUsage.totalTokenCount()).thenReturn(Optional.of(150));
 			when(mockResponse.usageMetadata()).thenReturn(Optional.of(mockUsage));
+			GeminiResponse geminiResp = new GeminiResponse(mockResponse, "m01", "gemini-2.5-flash");
 
 			when(geminiChatAdapter.getResponse(anyString()))
-					.thenReturn(mockResponse)  // 첫 번째 호출: 성공
+					.thenReturn(geminiResp)  // 첫 번째 호출: 성공
 					.thenThrow(new ClientException(429, "Resource has been exhausted", "RATE_LIMIT_EXCEEDED"));  // 두 번째 호출: Rate Limit
 
 			String requestBody = objectMapper.writeValueAsString(insightRequest);

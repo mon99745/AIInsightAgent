@@ -25,9 +25,41 @@ spring:
       mode: never
   ai:
     gemini:
+      models:
+        - id: m00
+          name: gemini-2.5-flash
+          api-key: ${GEMINI_API_KEY_0:}
+        - id: m01
+          name: gemini-2.5-flash
+          api-key: ${GEMINI_API_KEY_1:}
+        - id: m02
+          name: gemini-2.5-flash
+          api-key: ${GEMINI_API_KEY_2:}
+        - id: m03
+          name: gemini-2.5-flash
+          api-key: ${GEMINI_API_KEY_3:}
+        - id: m04
+          name: gemini-2.5-flash
+          api-key: ${GEMINI_API_KEY_4:}
+        - id: m05
+          name: gemini-2.5-flash
+          api-key: ${GEMINI_API_KEY_5:}
+        - id: m06
+          name: gemini-2.5-flash
+          api-key: ${GEMINI_API_KEY_6:}
+        - id: m07
+          name: gemini-2.5-flash
+          api-key: ${GEMINI_API_KEY_7:}
+        - id: m08
+          name: gemini-2.5-flash
+          api-key: ${GEMINI_API_KEY_8:}
+        - id: m09
+          name: gemini-2.5-flash
+          api-key: ${GEMINI_API_KEY_9:}
       temperature: 0.7
-      base-url: https://generativelanguage.googleapis.com
-      completions-path: v1beta/models/${spring.ai.gemini.model}:generateContent
+      base-url: https://generativelanguage.com
+      completions-path: v1beta2/models/{model}/completions
+      max-output-tokens: 8192
 
   main:
     banner-mode: off

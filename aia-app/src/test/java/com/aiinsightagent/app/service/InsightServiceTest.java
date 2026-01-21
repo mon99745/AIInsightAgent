@@ -32,7 +32,8 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -108,7 +109,8 @@ class InsightServiceTest {
 				analysisRawData,
 				AnalysisType.STYLE,
 				AnalysisStatus.SUCCESS,
-				resultPayload
+				resultPayload,
+				"gemini-2.5-flash#00"
 		);
 		ReflectionTestUtils.setField(analysisResult, "resultId", 1L);
 	}
@@ -185,7 +187,7 @@ class InsightServiceTest {
 					.willReturn(Optional.of(preparedContext));
 			given(insightFacade.analysis(insightRequest, preparedContext.asPromptText()))
 					.willReturn(insightResponse);
-			given(resultService.save(actor, analysisRawData, insightResponse))
+			given(resultService.save(eq(actor), eq(analysisRawData), eq(insightResponse), anyString()))
 					.willReturn(analysisResult);
 
 			// when
@@ -202,7 +204,7 @@ class InsightServiceTest {
 			verify(rawDataService, times(1)).save(actor, userPrompts);
 			verify(contextService, times(1)).findByActorKey(actor);
 			verify(insightFacade, times(1)).analysis(insightRequest, preparedContext.asPromptText());
-			verify(resultService, times(1)).save(actor, analysisRawData, insightResponse);
+			verify(resultService, times(1)).save(eq(actor), eq(analysisRawData), eq(insightResponse), anyString());
 		}
 	}
 
@@ -224,7 +226,7 @@ class InsightServiceTest {
 					.willReturn(Optional.empty());
 			given(insightFacade.analysis(insightRequest, null))
 					.willReturn(insightResponse);
-			given(resultService.save(actor, analysisRawData, insightResponse))
+			given(resultService.save(eq(actor), eq(analysisRawData), eq(insightResponse), anyString()))
 					.willReturn(analysisResult);
 
 			// when
@@ -286,7 +288,7 @@ class InsightServiceTest {
 					.willReturn(Optional.empty());
 			given(insightFacade.analysis(newUserRequest, null))
 					.willReturn(insightResponse);
-			given(resultService.save(newActor, analysisRawData, insightResponse))
+			given(resultService.save(eq(newActor), eq(analysisRawData), eq(insightResponse), anyString()))
 					.willReturn(analysisResult);
 
 			// when
@@ -316,7 +318,7 @@ class InsightServiceTest {
 			given(insightFacade.analysis(any(InsightRequest.class), any()))
 					.willReturn(insightResponse);
 			given(resultService.save(any(Actor.class), any(AnalysisRawData.class),
-					any(InsightResponse.class)))
+					any(InsightResponse.class), anyString()))
 					.willReturn(analysisResult);
 
 			// when
@@ -345,14 +347,14 @@ class InsightServiceTest {
 					.willReturn(Optional.empty());
 			given(insightFacade.analysis(insightRequest, null))
 					.willReturn(insightResponse);
-			given(resultService.save(actor, analysisRawData, insightResponse))
+			given(resultService.save(eq(actor), eq(analysisRawData), eq(insightResponse), anyString()))
 					.willReturn(analysisResult);
 
 			// when
 			insightService.requestInsight(insightRequest);
 
 			// then
-			verify(resultService, times(1)).save(actor, analysisRawData, insightResponse);
+			verify(resultService, times(1)).save(eq(actor), eq(analysisRawData), eq(insightResponse), anyString());
 		}
 	}
 
@@ -376,7 +378,7 @@ class InsightServiceTest {
 					.willReturn(Optional.of(preparedContext));
 			given(insightFacade.analysis(insightRequest, expectedContextText))
 					.willReturn(insightResponse);
-			given(resultService.save(actor, analysisRawData, insightResponse))
+			given(resultService.save(eq(actor), eq(analysisRawData), eq(insightResponse), anyString()))
 					.willReturn(analysisResult);
 
 			// when
@@ -487,7 +489,7 @@ class InsightServiceTest {
 					.hasMessage("Analysis failed");
 
 			// 분석 실패 후 결과 저장은 호출되지 않아야 함
-			verify(resultService, never()).save(any(), any(), any());
+			verify(resultService, never()).save(any(), any(), any(), any());
 		}
 	}
 
@@ -524,7 +526,7 @@ class InsightServiceTest {
 					.willReturn(Optional.empty());
 			given(insightFacade.analysis(any(InsightRequest.class), any()))
 					.willReturn(insightResponse);
-			given(resultService.save(any(), any(), any()))
+			given(resultService.save(any(), any(), any(), any()))
 					.willReturn(analysisResult);
 
 			// when
