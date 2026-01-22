@@ -40,6 +40,9 @@ out/
 ### Claude ###
 **/.claude/**
 
+### Postman ###
+**/postman/**
+
 ### APP ###
 **/*.env
 **/*-cwd

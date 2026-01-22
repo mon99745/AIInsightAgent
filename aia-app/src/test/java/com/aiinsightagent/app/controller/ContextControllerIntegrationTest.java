@@ -100,11 +100,10 @@ class ContextControllerIntegrationTest {
 							.content(requestBody))
 					.andDo(print())
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextId").exists())
-					.andExpect(jsonPath("$.contextType").value("running_history"))
-					.andExpect(jsonPath("$.contextScope").value("ACTOR"))
-					.andExpect(jsonPath("$.active").value(true))
-					.andExpect(jsonPath("$.confidenceLevel").value("MEDIUM"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.resultMsg").value("OK"))
+					.andExpect(jsonPath("$.context.userId").value("test-user"))
+					.andExpect(jsonPath("$.context.category").value("running_history"));
 
 			// DB 검증 - Actor 생성 확인
 			Actor savedActor = actorRepository.findByActorKey("test-user").orElseThrow();
@@ -139,7 +138,8 @@ class ContextControllerIntegrationTest {
 							.content(requestBody))
 					.andDo(print())
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("health_metrics"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("health_metrics"));
 
 			// DB 검증 - Actor는 기존 것 사용
 			assertThat(actorRepository.findAll()).hasSize(1);
@@ -169,7 +169,8 @@ class ContextControllerIntegrationTest {
 								.contentType(MediaType.APPLICATION_JSON)
 								.content(objectMapper.writeValueAsString(ctx)))
 						.andExpect(status().isOk())
-						.andExpect(jsonPath("$.contextType").value(categories[i]));
+						.andExpect(jsonPath("$.resultCode").value(200))
+						.andExpect(jsonPath("$.context.category").value(categories[i]));
 			}
 
 			// then - DB 검증
@@ -194,7 +195,8 @@ class ContextControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(requestBody))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("empty_category"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("empty_category"));
 
 			// DB 검증
 			Actor actor = actorRepository.findByActorKey("empty-user").orElseThrow();
@@ -224,7 +226,8 @@ class ContextControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(requestBody))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("large_category"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("large_category"));
 
 			// DB 검증
 			assertThat(actorRepository.findAll()).hasSize(1);
@@ -253,7 +256,8 @@ class ContextControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(requestBody))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("special_category"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("special_category"));
 		}
 
 		@Test
@@ -352,11 +356,10 @@ class ContextControllerIntegrationTest {
 							.param("userId", "test-user"))
 					.andDo(print())
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextId").exists())
-					.andExpect(jsonPath("$.contextType").value("running_history"))
-					.andExpect(jsonPath("$.contextScope").value("ACTOR"))
-					.andExpect(jsonPath("$.active").value(true))
-					.andExpect(jsonPath("$.actor.actorKey").value("test-user"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.resultMsg").value("OK"))
+					.andExpect(jsonPath("$.context.userId").value("test-user"))
+					.andExpect(jsonPath("$.context.category").value("running_history"));
 		}
 
 		@Test
@@ -380,8 +383,9 @@ class ContextControllerIntegrationTest {
 				mockMvc.perform(post("/api/v1/context/get")
 								.param("userId", "user-" + i))
 						.andExpect(status().isOk())
-						.andExpect(jsonPath("$.contextType").value("category-" + i))
-						.andExpect(jsonPath("$.actor.actorKey").value("user-" + i));
+						.andExpect(jsonPath("$.resultCode").value(200))
+						.andExpect(jsonPath("$.context.category").value("category-" + i))
+						.andExpect(jsonPath("$.context.userId").value("user-" + i));
 			}
 		}
 
@@ -399,7 +403,8 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/get")
 							.param("userId", "test-user"))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("running_history"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("running_history"));
 		}
 
 		@Test
@@ -474,8 +479,8 @@ class ContextControllerIntegrationTest {
 							.content(updateRequestBody))
 					.andDo(print())
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextId").exists())
-					.andExpect(jsonPath("$.contextType").value("updated_running_history"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("updated_running_history"));
 
 			// DB 검증 - Context가 업데이트됨
 			Actor actor = actorRepository.findByActorKey("test-user").orElseThrow();
@@ -508,7 +513,8 @@ class ContextControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(updatedContext)))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("new_category"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("new_category"));
 		}
 
 		@Test
@@ -533,7 +539,8 @@ class ContextControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(updatedContext)))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("running_history"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("running_history"));
 		}
 
 		@Test
@@ -556,7 +563,8 @@ class ContextControllerIntegrationTest {
 								.contentType(MediaType.APPLICATION_JSON)
 								.content(objectMapper.writeValueAsString(updateCtx)))
 						.andExpect(status().isOk())
-						.andExpect(jsonPath("$.contextType").value("version-" + i));
+						.andExpect(jsonPath("$.resultCode").value(200))
+						.andExpect(jsonPath("$.context.category").value("version-" + i));
 			}
 
 			// DB 검증 - 여전히 1개만 존재
@@ -624,7 +632,9 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/delete")
 							.param("userId", "test-user"))
 					.andDo(print())
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.resultMsg").value("OK"));
 
 			// DB 검증 - Context 삭제됨
 			Actor actor = actorRepository.findByActorKey("test-user").orElseThrow();
@@ -645,7 +655,8 @@ class ContextControllerIntegrationTest {
 			// when - 삭제
 			mockMvc.perform(post("/api/v1/context/delete")
 							.param("userId", "test-user"))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value(200));
 
 			// then - 재저장 성공
 			Context newContext = Context.builder()
@@ -658,7 +669,8 @@ class ContextControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(newContext)))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("new_category"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("new_category"));
 		}
 
 		@Test
@@ -746,7 +758,8 @@ class ContextControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(saveRequestBody))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("running_history"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("running_history"));
 
 			// DB 검증 - Save 후
 			Actor savedActor = actorRepository.findByActorKey("test-user").orElseThrow();
@@ -757,7 +770,8 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/get")
 							.param("userId", "test-user"))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("running_history"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("running_history"));
 
 			// 3. Update - Context 수정
 			Map<String, String> updatedData = new HashMap<>();
@@ -775,7 +789,8 @@ class ContextControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(updateRequestBody))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("updated_running_history"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("updated_running_history"));
 
 			// DB 검증 - Update 후
 			PreparedContext updatedPreparedContext = preparedContextRepository
@@ -787,12 +802,14 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/get")
 							.param("userId", "test-user"))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("updated_running_history"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("updated_running_history"));
 
 			// 5. Delete - Context 삭제
 			mockMvc.perform(post("/api/v1/context/delete")
 							.param("userId", "test-user"))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value(200));
 
 			// DB 검증 - Delete 후
 			assertThat(preparedContextRepository.findByActor(savedActor)).isEmpty();
@@ -822,7 +839,8 @@ class ContextControllerIntegrationTest {
 								.contentType(MediaType.APPLICATION_JSON)
 								.content(objectMapper.writeValueAsString(ctx)))
 						.andExpect(status().isOk())
-						.andExpect(jsonPath("$.contextType").value(categories[i]));
+						.andExpect(jsonPath("$.resultCode").value(200))
+						.andExpect(jsonPath("$.context.category").value(categories[i]));
 			}
 
 			// then - 각 사용자별 독립적으로 조회 가능
@@ -830,23 +848,27 @@ class ContextControllerIntegrationTest {
 				mockMvc.perform(post("/api/v1/context/get")
 								.param("userId", userIds[i]))
 						.andExpect(status().isOk())
-						.andExpect(jsonPath("$.contextType").value(categories[i]))
-						.andExpect(jsonPath("$.actor.actorKey").value(userIds[i]));
+						.andExpect(jsonPath("$.resultCode").value(200))
+						.andExpect(jsonPath("$.context.category").value(categories[i]))
+						.andExpect(jsonPath("$.context.userId").value(userIds[i]));
 			}
 
 			// user2만 삭제
 			mockMvc.perform(post("/api/v1/context/delete")
 							.param("userId", "user2"))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value(200));
 
 			// user1, user3는 여전히 조회 가능
 			mockMvc.perform(post("/api/v1/context/get")
 							.param("userId", "user1"))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value(200));
 
 			mockMvc.perform(post("/api/v1/context/get")
 							.param("userId", "user3"))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value(200));
 
 			// user2는 조회 실패
 			mockMvc.perform(post("/api/v1/context/get")
@@ -865,7 +887,8 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/save")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(context)))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value(200));
 
 			// 2단계: 첫 번째 수정
 			Context update1 = Context.builder()
@@ -877,7 +900,8 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/update")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(update1)))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value(200));
 
 			// 3단계: 두 번째 수정
 			Context update2 = Context.builder()
@@ -889,13 +913,15 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/update")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(objectMapper.writeValueAsString(update2)))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value(200));
 
 			// 최종 상태 확인
 			mockMvc.perform(post("/api/v1/context/get")
 							.param("userId", "test-user"))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.contextType").value("running_history_v3"));
+					.andExpect(jsonPath("$.resultCode").value(200))
+					.andExpect(jsonPath("$.context.category").value("running_history_v3"));
 
 			// DB 검증 - Context는 항상 1개만 유지
 			assertThat(preparedContextRepository.findAll()).hasSize(1);
