@@ -12,8 +12,22 @@ public class InsightRequestValidator {
 		if (!hasUserPrompt(request)) {
 			throw new InsightAppException(InsightAppError.MISSING_USER_PROMPT_REQUEST);
 		}
+		validateUserId(request);
+		validatePurpose(request);
 		validateDataKey(request);
 		validateDataFields(request);
+	}
+
+	public static void validateUserId(InsightRequest request) {
+		if(request.getUserId() == null || request.getUserId().isEmpty()) {
+			throw new InsightAppException(InsightAppError.EMPTY_USER_ID);
+		}
+	}
+
+	public static void validatePurpose(InsightRequest request) {
+		if(request.getPurpose() == null || request.getPurpose().isEmpty()) {
+			throw new InsightAppException(InsightAppError.EMPTY_PURPOSE);
+		}
 	}
 
 	public static boolean hasUserPrompt(InsightRequest request) {

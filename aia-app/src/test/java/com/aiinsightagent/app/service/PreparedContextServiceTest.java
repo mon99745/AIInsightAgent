@@ -312,8 +312,8 @@ class PreparedContextServiceTest {
 		// when
 		preparedContextService.update(actor, updatedContext);
 
-		// then
-		verify(spyContext, times(1)).update("new_category", updatedContext.getData().toString());
+		// then - parserUtils.toJson()이 contextDataJson을 반환하므로 이를 검증
+		verify(spyContext, times(1)).update("new_category", contextDataJson);
 		verify(contextRepository, times(1)).save(spyContext);
 	}
 
@@ -432,8 +432,7 @@ class PreparedContextServiceTest {
 	@Test
 	@DisplayName("asPromptText - PreparedContext를 프롬프트 텍스트로 변환")
 	void asPromptText_ReturnsContextPayload() {
-		// given
-		String expectedPayload = contextData.toString();
+		// given - preparedContext는 contextDataJson으로 생성됨
 		given(contextRepository.findByActor(actor))
 				.willReturn(Optional.of(preparedContext));
 
@@ -442,7 +441,7 @@ class PreparedContextServiceTest {
 
 		// then
 		assertThat(result).isPresent();
-		assertThat(result.get().asPromptText()).isEqualTo(expectedPayload);
+		assertThat(result.get().asPromptText()).isEqualTo(contextDataJson);
 	}
 
 	@Test

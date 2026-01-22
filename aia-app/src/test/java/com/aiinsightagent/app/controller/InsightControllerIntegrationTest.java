@@ -108,13 +108,10 @@ class InsightControllerIntegrationTest {
         Actor actor = Actor.create("test-user");
 		actorRepository.save(actor);
 
-		// PreparedContext 생성 및 저장
-		Map<String, String> contextData = new HashMap<>();
-		contextData.put("averagePace", "6:00");
-		contextData.put("totalDistance", "100km");
-		contextData.put("runningDays", "30");
+		// PreparedContext 생성 및 저장 (JSON 형식으로 저장)
+		String contextDataJson = "{\"averagePace\":\"6:00\",\"totalDistance\":\"100km\",\"runningDays\":\"30\"}";
 
-        PreparedContext preparedContext = new PreparedContext(actor, "running_history", contextData.toString());
+        PreparedContext preparedContext = new PreparedContext(actor, "running_history", contextDataJson);
 		preparedContextRepository.save(preparedContext);
 
 		// UserPrompt 생성
