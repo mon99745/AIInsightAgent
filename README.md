@@ -6,6 +6,7 @@
 A **data analysis and insight generation platform** powered by **Google Gemini API**.
 Provides **high throughput** and **reliable AI calls** through queue-based asynchronous architecture.
 
+
 ---
 
 ## 📌 Table of Contents
