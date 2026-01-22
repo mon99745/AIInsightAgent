@@ -35,7 +35,7 @@ public class InsightService {
 		log.info("analysis called with purpose: {}, userPrompts: {}"
 				, data.getPurpose(), data.getUserPrompt());
 
-		// 1. 데이터 검증
+		// 1. 요청 데이터 검증
 		InsightRequestValidator.validate(data);
 
 		// 2. 접근 주체 조회 및 저장

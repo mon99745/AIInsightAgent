@@ -16,6 +16,8 @@ public enum InsightAppError
 	MISSING_USER_PROMPT_REQUEST(InsightAppError.CODE_PREFIX + "01-01", "Missing exercise session data (userPrompt).", HttpStatus.BAD_REQUEST),
 	EMPTY_DATA_KEY(InsightAppError.CODE_PREFIX + "01-02", "Each userPrompt must have a non-empty dataKey.", HttpStatus.BAD_REQUEST),
 	EMPTY_DATA_OBJECT(InsightAppError.CODE_PREFIX + "01-03", "Each userPrompt must have a non-empty data object.", HttpStatus.BAD_REQUEST),
+	EMPTY_USER_ID(InsightAppError.CODE_PREFIX + "01-04", "Empty or Null, User ID.", HttpStatus.BAD_REQUEST),
+	EMPTY_PURPOSE(InsightAppError.CODE_PREFIX + "01-05", "Empty or Null, Purpose.", HttpStatus.BAD_REQUEST),
 
 	INTERNAL_SERVER_ERROR(InsightAppError.CODE_PREFIX + "02-00", "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
 	FAIL_SERIALIZE_INSIGHT_DETAIL(InsightAppError.CODE_PREFIX + "02-01", "Failed to serialize InsightDetail", HttpStatus.INTERNAL_SERVER_ERROR),
