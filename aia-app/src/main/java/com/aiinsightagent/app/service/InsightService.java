@@ -64,6 +64,5 @@ public class InsightService {
 		Actor actor = actorService.get(userId);
 
 		return rawDataService.getUserPromtListByActor(actor);
-
 	}
 }

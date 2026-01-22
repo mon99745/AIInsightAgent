@@ -4,9 +4,11 @@ import com.aiinsightagent.app.entity.Actor;
 import com.aiinsightagent.app.entity.PreparedContext;
 import com.aiinsightagent.app.enums.ConfidenceLevel;
 import com.aiinsightagent.app.repository.PreparedContextRepository;
+import com.aiinsightagent.app.util.ParserUtils;
 import com.aiinsightagent.core.exception.InsightError;
 import com.aiinsightagent.core.exception.InsightException;
 import com.aiinsightagent.core.model.Context;
+import com.aiinsightagent.core.model.ContextResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,8 +27,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("PreparedContextService 테스트")
@@ -35,6 +39,9 @@ class PreparedContextServiceTest {
 	@Mock
 	private PreparedContextRepository contextRepository;
 
+	@Mock
+	private ParserUtils parserUtils;
+
 	@InjectMocks
 	private PreparedContextService preparedContextService;
 
@@ -42,6 +49,7 @@ class PreparedContextServiceTest {
 	private Context context;
 	private PreparedContext preparedContext;
 	private Map<String, String> contextData;
+	private String contextDataJson;
 
 	@BeforeEach
 	void setUp() {
@@ -55,16 +63,23 @@ class PreparedContextServiceTest {
 		contextData.put("totalDistance", "100km");
 		contextData.put("runningDays", "30");
 
+		// JSON 형식 문자열
+		contextDataJson = "{\"averagePace\":\"6:00\",\"totalDistance\":\"100km\",\"runningDays\":\"30\"}";
+
 		// Context 생성
 		context = Context.builder()
 				.category("running_history")
 				.data(contextData)
 				.build();
 
-		// PreparedContext 생성
-		preparedContext = new PreparedContext(actor, "running_history", contextData.toString());
+		// PreparedContext 생성 (JSON 형식으로 저장)
+		preparedContext = new PreparedContext(actor, "running_history", contextDataJson);
 		ReflectionTestUtils.setField(preparedContext, "contextId", 1L);
 		ReflectionTestUtils.setField(preparedContext, "regDate", LocalDateTime.now());
+
+		// parserUtils 기본 모킹
+		lenient().when(parserUtils.toJson(any())).thenReturn(contextDataJson);
+		lenient().when(parserUtils.parsePayload(anyString())).thenReturn(contextData);
 	}
 
 	@Test
@@ -103,8 +118,8 @@ class PreparedContextServiceTest {
 	}
 
 	@Test
-	@DisplayName("save - 새로운 PreparedContext 저장 성공")
-	void save_NewContext_Success() {
+	@DisplayName("create - 새로운 PreparedContext 저장 성공")
+	void create_NewContext_Success() {
 		// given
 		given(contextRepository.findByActor(actor))
 				.willReturn(Optional.empty());
@@ -112,20 +127,21 @@ class PreparedContextServiceTest {
 				.willReturn(preparedContext);
 
 		// when
-		PreparedContext result = preparedContextService.save(actor, context);
+		ContextResponse result = preparedContextService.create(actor, context);
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getActor()).isEqualTo(actor);
-		assertThat(result.getContextType()).isEqualTo("running_history");
+		assertThat(result.getResultCode()).isEqualTo(200);
+		assertThat(result.getContext()).isNotNull();
+		assertThat(result.getContext().getCategory()).isEqualTo("running_history");
 
 		verify(contextRepository, times(1)).findByActor(actor);
 		verify(contextRepository, times(1)).save(any(PreparedContext.class));
 	}
 
 	@Test
-	@DisplayName("save - ArgumentCaptor로 저장되는 PreparedContext 검증")
-	void save_VerifyPreparedContextWithArgumentCaptor() {
+	@DisplayName("create - ArgumentCaptor로 저장되는 PreparedContext 검증")
+	void create_VerifyPreparedContextWithArgumentCaptor() {
 		// given
 		ArgumentCaptor<PreparedContext> captor = ArgumentCaptor.forClass(PreparedContext.class);
 
@@ -135,27 +151,27 @@ class PreparedContextServiceTest {
 				.willReturn(preparedContext);
 
 		// when
-		preparedContextService.save(actor, context);
+		preparedContextService.create(actor, context);
 
 		// then
 		PreparedContext capturedContext = captor.getValue();
 		assertThat(capturedContext.getActor()).isEqualTo(actor);
 		assertThat(capturedContext.getContextType()).isEqualTo("running_history");
-		assertThat(capturedContext.getContextPayload()).isEqualTo(contextData.toString());
+		assertThat(capturedContext.getContextPayload()).isEqualTo(contextDataJson);
 		assertThat(capturedContext.getContextScope()).isEqualTo("ACTOR");
 		assertThat(capturedContext.isActive()).isTrue();
 		assertThat(capturedContext.getConfidenceLevel()).isEqualTo(ConfidenceLevel.MEDIUM);
 	}
 
 	@Test
-	@DisplayName("save - 이미 존재하는 Actor의 Context 저장 시 예외 발생")
-	void save_ExistingContext_ThrowsException() {
+	@DisplayName("create - 이미 존재하는 Actor의 Context 저장 시 예외 발생")
+	void create_ExistingContext_ThrowsException() {
 		// given
 		given(contextRepository.findByActor(actor))
 				.willReturn(Optional.of(preparedContext));
 
 		// when & then
-		assertThatThrownBy(() -> preparedContextService.save(actor, context))
+		assertThatThrownBy(() -> preparedContextService.create(actor, context))
 				.isInstanceOf(InsightException.class)
 				.hasMessageContaining(InsightError.EXIST_ACTOR_PREPARED_CONTEXT.toString())
 				.hasMessageContaining(actor.getActorKey());
@@ -165,29 +181,26 @@ class PreparedContextServiceTest {
 	}
 
 	@Test
-	@DisplayName("save - 다양한 카테고리의 Context 저장")
-	void save_DifferentCategories_Success() {
+	@DisplayName("create - 다양한 카테고리의 Context 저장")
+	void create_DifferentCategories_Success() {
 		// given
 		Context healthContext = Context.builder()
 				.category("health_metrics")
 				.data(Map.of("heartRate", "170", "calories", "500"))
 				.build();
 
-		PreparedContext healthPreparedContext = new PreparedContext(
-				actor, "health_metrics", healthContext.getData().toString()
-		);
-
 		given(contextRepository.findByActor(actor))
 				.willReturn(Optional.empty());
 		given(contextRepository.save(any(PreparedContext.class)))
-				.willReturn(healthPreparedContext);
+				.willReturn(preparedContext);
 
 		// when
-		PreparedContext result = preparedContextService.save(actor, healthContext);
+		ContextResponse result = preparedContextService.create(actor, healthContext);
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.getContextType()).isEqualTo("health_metrics");
+		assertThat(result.getResultCode()).isEqualTo(200);
+		assertThat(result.getContext().getCategory()).isEqualTo("health_metrics");
 
 		verify(contextRepository, times(1)).save(any(PreparedContext.class));
 	}
@@ -200,12 +213,15 @@ class PreparedContextServiceTest {
 				.willReturn(Optional.of(preparedContext));
 
 		// when
-		PreparedContext result = preparedContextService.get(actor);
+		ContextResponse result = preparedContextService.get(actor);
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result).isEqualTo(preparedContext);
-		assertThat(result.getActor()).isEqualTo(actor);
+		assertThat(result.getResultCode()).isEqualTo(200);
+		assertThat(result.getContext()).isNotNull();
+		assertThat(result.getContext().getUserId()).isEqualTo(actor.getActorKey());
+		assertThat(result.getContext().getCategory()).isEqualTo(preparedContext.getContextType());
+		assertThat(result.getContext().getData()).isEqualTo(contextData);
 
 		verify(contextRepository, times(1)).findByActor(actor);
 	}
@@ -246,10 +262,12 @@ class PreparedContextServiceTest {
 				.willReturn(existingContext);
 
 		// when
-		PreparedContext result = preparedContextService.update(actor, updatedContext);
+		ContextResponse result = preparedContextService.update(actor, updatedContext);
 
 		// then
 		assertThat(result).isNotNull();
+		assertThat(result.getResultCode()).isEqualTo(200);
+		assertThat(result.getContext().getCategory()).isEqualTo("updated_category");
 
 		verify(contextRepository, times(1)).findByActor(actor);
 		verify(contextRepository, times(1)).save(existingContext);
@@ -308,9 +326,12 @@ class PreparedContextServiceTest {
 		doNothing().when(contextRepository).deleteById(1L);
 
 		// when
-		preparedContextService.delete(actor);
+		ContextResponse result = preparedContextService.delete(actor);
 
 		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getResultCode()).isEqualTo(200);
+
 		verify(contextRepository, times(1)).findByActor(actor);
 		verify(contextRepository, times(1)).deleteById(1L);
 	}
@@ -347,41 +368,40 @@ class PreparedContextServiceTest {
 		doNothing().when(contextRepository).deleteById(contextId);
 
 		// when
-		preparedContextService.delete(actor);
+		ContextResponse result = preparedContextService.delete(actor);
 
 		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getResultCode()).isEqualTo(200);
 		verify(contextRepository, times(1)).deleteById(contextId);
 	}
 
 	@Test
-	@DisplayName("save - Context 데이터가 빈 Map인 경우")
-	void save_EmptyContextData_Success() {
+	@DisplayName("create - Context 데이터가 빈 Map인 경우")
+	void create_EmptyContextData_Success() {
 		// given
 		Context emptyContext = Context.builder()
 				.category("empty_category")
 				.data(new HashMap<>())
 				.build();
 
-		PreparedContext emptyPreparedContext = new PreparedContext(
-				actor, "empty_category", "{}"
-		);
-
 		given(contextRepository.findByActor(actor))
 				.willReturn(Optional.empty());
 		given(contextRepository.save(any(PreparedContext.class)))
-				.willReturn(emptyPreparedContext);
+				.willReturn(preparedContext);
 
 		// when
-		PreparedContext result = preparedContextService.save(actor, emptyContext);
+		ContextResponse result = preparedContextService.create(actor, emptyContext);
 
 		// then
 		assertThat(result).isNotNull();
+		assertThat(result.getResultCode()).isEqualTo(200);
 		verify(contextRepository, times(1)).save(any(PreparedContext.class));
 	}
 
 	@Test
-	@DisplayName("save - 여러 Actor에 대한 Context 저장")
-	void save_MultipleActors_Success() {
+	@DisplayName("create - 여러 Actor에 대한 Context 저장")
+	void create_MultipleActors_Success() {
 		// given
 		Actor actor1 = Actor.create("user-1");
 		Actor actor2 = Actor.create("user-2");
@@ -398,12 +418,14 @@ class PreparedContextServiceTest {
 				.willReturn(context2);
 
 		// when
-		PreparedContext result1 = preparedContextService.save(actor1, context);
-		PreparedContext result2 = preparedContextService.save(actor2, context);
+		ContextResponse result1 = preparedContextService.create(actor1, context);
+		ContextResponse result2 = preparedContextService.create(actor2, context);
 
 		// then
 		assertThat(result1).isNotNull();
+		assertThat(result1.getResultCode()).isEqualTo(200);
 		assertThat(result2).isNotNull();
+		assertThat(result2.getResultCode()).isEqualTo(200);
 		verify(contextRepository, times(2)).save(any(PreparedContext.class));
 	}
 
@@ -455,8 +477,8 @@ class PreparedContextServiceTest {
 	}
 
 	@Test
-	@DisplayName("save와 get - 저장 후 조회 흐름")
-	void saveAndGet_Flow() {
+	@DisplayName("create와 get - 저장 후 조회 흐름")
+	void createAndGet_Flow() {
 		// given
 		given(contextRepository.findByActor(actor))
 				.willReturn(Optional.empty())
@@ -465,13 +487,16 @@ class PreparedContextServiceTest {
 				.willReturn(preparedContext);
 
 		// when
-		PreparedContext saved = preparedContextService.save(actor, context);
-		PreparedContext retrieved = preparedContextService.get(actor);
+		ContextResponse saved = preparedContextService.create(actor, context);
+		ContextResponse retrieved = preparedContextService.get(actor);
 
 		// then
 		assertThat(saved).isNotNull();
+		assertThat(saved.getResultCode()).isEqualTo(200);
 		assertThat(retrieved).isNotNull();
-		assertThat(saved).isEqualTo(retrieved);
+		assertThat(retrieved.getResultCode()).isEqualTo(200);
+		assertThat(retrieved.getContext().getCategory()).isEqualTo(saved.getContext().getCategory());
+		assertThat(retrieved.getContext().getData()).isEqualTo(contextData);
 
 		verify(contextRepository, times(2)).findByActor(actor);
 		verify(contextRepository, times(1)).save(any(PreparedContext.class));
