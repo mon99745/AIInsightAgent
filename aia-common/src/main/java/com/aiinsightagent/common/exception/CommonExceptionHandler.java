@@ -29,8 +29,9 @@ public class CommonExceptionHandler {
 				"path", request.getRequestURI()
 		);
 
-		// 상태코드는 Error 객체에서 가져오도록 구현 가능, 없으면 500
-		return ResponseEntity.status(500).body(body);
+		// 상태코드는 Error 객체에서 가져옴, 없으면 500
+		HttpStatus status = ex.getError() != null ? ex.getError().getHttpStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+		return ResponseEntity.status(status).body(body);
 	}
 
 	// 400 - MISSING_PARAMETER
