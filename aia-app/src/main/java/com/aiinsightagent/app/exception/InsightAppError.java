@@ -18,6 +18,9 @@ public enum InsightAppError
 	EMPTY_DATA_OBJECT(InsightAppError.CODE_PREFIX + "01-03", "Each userPrompt must have a non-empty data object.", HttpStatus.BAD_REQUEST),
 	EMPTY_USER_ID(InsightAppError.CODE_PREFIX + "01-04", "Empty or Null, User ID.", HttpStatus.BAD_REQUEST),
 	EMPTY_PURPOSE(InsightAppError.CODE_PREFIX + "01-05", "Empty or Null, Purpose.", HttpStatus.BAD_REQUEST),
+	EMPTY_CONTEXT(InsightAppError.CODE_PREFIX + "01-06", "Empty or Null, Context.", HttpStatus.BAD_REQUEST),
+	EMPTY_CONTEXT_CATEGORY(InsightAppError.CODE_PREFIX + "01-07", "Empty or Null, Context Category.", HttpStatus.BAD_REQUEST),
+	EMPTY_CONTEXT_DATA(InsightAppError.CODE_PREFIX + "01-08", "Empty or Null, Context data.", HttpStatus.BAD_REQUEST),
 
 	INTERNAL_SERVER_ERROR(InsightAppError.CODE_PREFIX + "02-00", "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
 	FAIL_SERIALIZE_INSIGHT_DETAIL(InsightAppError.CODE_PREFIX + "02-01", "Failed to serialize InsightDetail", HttpStatus.INTERNAL_SERVER_ERROR),
