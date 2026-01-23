@@ -28,7 +28,8 @@ public enum InsightError
 	QUEUE_TIMEOUT(InsightError.CODE_PREFIX + "03-02", "Request timed out in queue", HttpStatus.GATEWAY_TIMEOUT),
 	QUEUE_NOT_RUNNING(InsightError.CODE_PREFIX + "03-03", "Queue manager is not running", HttpStatus.SERVICE_UNAVAILABLE),
 
-	GEMINI_RATE_LIMIT(InsightError.CODE_PREFIX + "04-01", "Gemini API rate limit exceeded", HttpStatus.TOO_MANY_REQUESTS);
+	GEMINI_RATE_LIMIT(InsightError.CODE_PREFIX + "04-01", "Gemini API rate limit exceeded", HttpStatus.TOO_MANY_REQUESTS),
+	INVALID_GEMINI_API_KEY(InsightError.CODE_PREFIX + "04-02", "Invalid Gemini API key", HttpStatus.SERVICE_UNAVAILABLE);
 
 	public static final String CODE_PREFIX = "AIAC-";
 

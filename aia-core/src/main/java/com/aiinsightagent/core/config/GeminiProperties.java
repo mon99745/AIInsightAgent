@@ -38,6 +38,11 @@ public class GeminiProperties {
 		private String id;
 		private String name;
 		private String apiKey;
+
+		@Override
+		public String toString() {
+			return "ModelConfig(id=" + id + ", name=" + name + ", apiKey=****)";
+		}
 	}
 
 	/**
