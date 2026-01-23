@@ -1,9 +1,11 @@
 # 🤖 AIInsightAgent, AIA
 
 **Google Gemini API**를 활용한 **데이터 분석 및 인사이트 도출 플랫폼**입니다.
+
 큐 기반 비동기 아키텍처를 통해 **높은 처리량**과 **안정적인 AI 호출**을 제공합니다.
 
 A **data analysis and insight generation platform** powered by **Google Gemini API**.
+
 Provides **high throughput** and **reliable AI calls** through queue-based asynchronous architecture.
 
 
