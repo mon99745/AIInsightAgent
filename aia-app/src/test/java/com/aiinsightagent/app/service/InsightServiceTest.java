@@ -424,7 +424,7 @@ class InsightServiceTest {
 		String userId = "non-existent-user";
 
 		given(actorService.get(userId))
-				.willThrow(new InsightException(InsightError.NOT_FOUND_ACTOR + ":" + userId));
+				.willThrow(new InsightException(InsightError.NOT_FOUND_ACTOR, ":" + userId));
 
 		// when & then
 		assertThatThrownBy(() -> insightService.getHistory(userId))

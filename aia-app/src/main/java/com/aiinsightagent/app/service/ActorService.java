@@ -23,6 +23,6 @@ public class ActorService {
 
 	public Actor get(String actorKey) {
 		return actorRepository.findByActorKey(actorKey)
-				.orElseThrow(() -> new InsightException(InsightError.NOT_FOUND_ACTOR + ":" + actorKey));
+				.orElseThrow(() -> new InsightException(InsightError.NOT_FOUND_ACTOR, ":" + actorKey));
 	}
 }
