@@ -27,10 +27,10 @@ public class AnalysisRawDataService {
 	private final ObjectMapper objectMapper;
 	private final AnalysisRawDataRepository rawDataRepository;
 
-	public AnalysisRawData save(Actor actor, List<UserPrompt> userPrompt) {
+	public AnalysisRawData save(Actor actor, String purpose, List<UserPrompt> userPrompt) {
 		String jsonPayload = convertToJson(userPrompt);
 
-		AnalysisRawData rawData = new AnalysisRawData(actor, InputType.JSON, jsonPayload);
+		AnalysisRawData rawData = new AnalysisRawData(actor, InputType.JSON, purpose, jsonPayload);
 
 		return rawDataRepository.save(rawData);
 	}

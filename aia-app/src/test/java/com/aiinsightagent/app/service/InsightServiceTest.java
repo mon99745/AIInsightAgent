@@ -85,7 +85,7 @@ class InsightServiceTest {
 
 		// AnalysisRawData 생성
 		String rawJson = "[{\"dataKey\":\"A0398D47\",\"data\":{\"duration\":\"3556\"}}]";
-		analysisRawData = new AnalysisRawData(actor, InputType.JSON, rawJson);
+		analysisRawData = new AnalysisRawData(actor, InputType.JSON, "running_style_analysis", rawJson);
 		ReflectionTestUtils.setField(analysisRawData, "inputId", 1L);
 		ReflectionTestUtils.setField(analysisRawData, "regDate", LocalDateTime.now());
 
@@ -181,7 +181,7 @@ class InsightServiceTest {
 
 			given(actorService.getOrCreate("test-user"))
 					.willReturn(actor);
-			given(rawDataService.save(actor, userPrompts))
+			given(rawDataService.save(actor, "running_style_analysis", userPrompts))
 					.willReturn(analysisRawData);
 			given(contextService.findByActorKey(actor))
 					.willReturn(Optional.of(preparedContext));
@@ -201,7 +201,7 @@ class InsightServiceTest {
 			// 검증: 모든 단계가 순서대로 실행되었는지
 			mockedValidator.verify(() -> InsightRequestValidator.validate(insightRequest), times(1));
 			verify(actorService, times(1)).getOrCreate("test-user");
-			verify(rawDataService, times(1)).save(actor, userPrompts);
+			verify(rawDataService, times(1)).save(actor, "running_style_analysis", userPrompts);
 			verify(contextService, times(1)).findByActorKey(actor);
 			verify(insightFacade, times(1)).analysis(insightRequest, preparedContext.asPromptText());
 			verify(resultService, times(1)).save(eq(actor), eq(analysisRawData), eq(insightResponse), anyString());
@@ -220,7 +220,7 @@ class InsightServiceTest {
 
 			given(actorService.getOrCreate("test-user"))
 					.willReturn(actor);
-			given(rawDataService.save(actor, userPrompts))
+			given(rawDataService.save(actor, "running_style_analysis", userPrompts))
 					.willReturn(analysisRawData);
 			given(contextService.findByActorKey(actor))
 					.willReturn(Optional.empty());
@@ -282,7 +282,7 @@ class InsightServiceTest {
 
 			given(actorService.getOrCreate("new-user"))
 					.willReturn(newActor);
-			given(rawDataService.save(newActor, userPrompts))
+			given(rawDataService.save(newActor, "running_style_analysis", userPrompts))
 					.willReturn(analysisRawData);
 			given(contextService.findByActorKey(newActor))
 					.willReturn(Optional.empty());
@@ -311,7 +311,7 @@ class InsightServiceTest {
 
 			given(actorService.getOrCreate("test-user"))
 					.willReturn(actor);
-			given(rawDataService.save(actor, userPrompts))
+			given(rawDataService.save(actor, "running_style_analysis", userPrompts))
 					.willReturn(analysisRawData);
 			given(contextService.findByActorKey(actor))
 					.willReturn(Optional.empty());
@@ -325,7 +325,7 @@ class InsightServiceTest {
 			insightService.requestInsight(insightRequest);
 
 			// then
-			verify(rawDataService, times(1)).save(actor, userPrompts);
+			verify(rawDataService, times(1)).save(actor, "running_style_analysis", userPrompts);
 		}
 	}
 
@@ -341,7 +341,7 @@ class InsightServiceTest {
 
 			given(actorService.getOrCreate("test-user"))
 					.willReturn(actor);
-			given(rawDataService.save(actor, userPrompts))
+			given(rawDataService.save(actor, "running_style_analysis", userPrompts))
 					.willReturn(analysisRawData);
 			given(contextService.findByActorKey(actor))
 					.willReturn(Optional.empty());
@@ -372,7 +372,7 @@ class InsightServiceTest {
 
 			given(actorService.getOrCreate("test-user"))
 					.willReturn(actor);
-			given(rawDataService.save(actor, userPrompts))
+			given(rawDataService.save(actor, "running_style_analysis", userPrompts))
 					.willReturn(analysisRawData);
 			given(contextService.findByActorKey(actor))
 					.willReturn(Optional.of(preparedContext));
@@ -476,7 +476,7 @@ class InsightServiceTest {
 
 			given(actorService.getOrCreate("test-user"))
 					.willReturn(actor);
-			given(rawDataService.save(actor, userPrompts))
+			given(rawDataService.save(actor, "running_style_analysis", userPrompts))
 					.willReturn(analysisRawData);
 			given(contextService.findByActorKey(actor))
 					.willReturn(Optional.empty());
@@ -520,7 +520,7 @@ class InsightServiceTest {
 
 			given(actorService.getOrCreate("user-1")).willReturn(actor1);
 			given(actorService.getOrCreate("user-2")).willReturn(actor2);
-			given(rawDataService.save(any(Actor.class), any()))
+			given(rawDataService.save(any(Actor.class), anyString(), any()))
 					.willReturn(analysisRawData);
 			given(contextService.findByActorKey(any(Actor.class)))
 					.willReturn(Optional.empty());

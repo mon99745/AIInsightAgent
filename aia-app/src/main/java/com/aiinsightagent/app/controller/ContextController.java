@@ -3,6 +3,7 @@ package com.aiinsightagent.app.controller;
 import com.aiinsightagent.app.entity.Actor;
 import com.aiinsightagent.app.service.ActorService;
 import com.aiinsightagent.app.service.PreparedContextService;
+import com.aiinsightagent.app.util.InsightRequestValidator;
 import com.aiinsightagent.core.model.Context;
 import com.aiinsightagent.core.model.ContextResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +31,9 @@ public class ContextController {
 	@Operation(summary = "전처리 데이터 저장" )
 	@PostMapping("save")
 	public ContextResponse saveContext(@RequestBody Context context) {
+		InsightRequestValidator.validateUserId(context.getUserId());
+		InsightRequestValidator.validateContext(context);
+
 		Actor actor = actorService.getOrCreate(context.getUserId());
 
 		return contextService.create(actor, context);
@@ -38,6 +42,8 @@ public class ContextController {
 	@Operation(summary = "전처리 데이터 추출" )
 	@PostMapping("get")
 	public ContextResponse getContext(@RequestParam String userId) {
+		InsightRequestValidator.validateUserId(userId);
+
 		Actor actor = actorService.get(userId);
 
 		return contextService.get(actor);
@@ -46,6 +52,9 @@ public class ContextController {
 	@Operation(summary = "전처리 데이터 수정" )
 	@PostMapping("update")
 	public ContextResponse updateContext(@RequestBody Context context) {
+		InsightRequestValidator.validateUserId(context.getUserId());
+		InsightRequestValidator.validateContext(context);
+
 		Actor actor = actorService.get(context.getUserId());
 
 		return contextService.update(actor, context);
@@ -54,6 +63,8 @@ public class ContextController {
 	@Operation(summary = "전처리 데이터 삭제" )
 	@PostMapping("delete")
 	public ContextResponse deleteContext(@RequestParam String userId) {
+		InsightRequestValidator.validateUserId(userId);
+
 		Actor actor = actorService.get(userId);
 
 		return contextService.delete(actor);

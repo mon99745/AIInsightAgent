@@ -38,7 +38,7 @@ public class SimulationController {
 
         Map<String, Object> root = new LinkedHashMap<>();
         root.put("userId", uuid);
-        root.put("purpose", "running_analysis");
+        root.put("purpose", "running_style_analysis");
 
         List<Map<String, Object>> userPromptList = new ArrayList<>();
 

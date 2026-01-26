@@ -486,7 +486,9 @@ class InsightControllerIntegrationTest {
 			mockMvc.perform(get("/api/v1/analysis/history")
 							.param("userId", "non-existent-user"))
 					.andDo(print())
-					.andExpect(status().is5xxServerError());
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.code").exists())
+					.andExpect(jsonPath("$.message").exists());
 		}
 
 		@Test

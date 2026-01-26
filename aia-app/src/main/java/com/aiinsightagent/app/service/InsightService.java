@@ -42,7 +42,7 @@ public class InsightService {
 		Actor actor = actorService.getOrCreate(data.getUserId());
 
 		// 3. 원본 데이터 저장
-		AnalysisRawData rawData = rawDataService.save(actor, data.getUserPrompt());
+		AnalysisRawData rawData = rawDataService.save(actor, data.getPurpose(), data.getUserPrompt());
 
 		// 4. 전처리 데이터 조회
 		String contextText = contextService.findByActorKey(actor)
