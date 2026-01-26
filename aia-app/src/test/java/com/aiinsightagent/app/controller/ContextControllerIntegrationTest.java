@@ -199,11 +199,8 @@ class ContextControllerIntegrationTest {
 					.andExpect(jsonPath("$.code").value("AIAA-01-08"))
 					.andExpect(jsonPath("$.message").value("[COMMON][EMPTY_CONTEXT_DATA]Empty or Null, Context data."));
 
-			// DB 검증 - PreparedContext는 저장되지 않아야 함 (Actor는 먼저 생성될 수 있음)
-			Actor actor = actorRepository.findByActorKey("empty-user").orElse(null);
-			if (actor != null) {
-				assertThat(preparedContextRepository.findByActor(actor)).isEmpty();
-			}
+			// DB 검증 - 트랜잭션 롤백으로 Actor와 PreparedContext 모두 저장되지 않아야 함
+			assertThat(actorRepository.findByActorKey("empty-user")).isEmpty();
 		}
 
 		@Test

@@ -379,24 +379,6 @@ class PreparedContextServiceTest {
 	}
 
 	@Test
-	@DisplayName("create - Context 데이터가 빈 Map인 경우 예외 발생")
-	void create_EmptyContextData_ThrowsException() {
-		// given
-		Context emptyContext = Context.builder()
-				.category("empty_category")
-				.data(new HashMap<>())
-				.build();
-
-		// when & then
-		assertThatThrownBy(() -> preparedContextService.create(actor, emptyContext))
-				.isInstanceOf(InsightAppException.class)
-				.extracting(e -> ((InsightAppException) e).getError())
-				.isEqualTo(InsightAppError.EMPTY_CONTEXT_DATA);
-
-		verify(contextRepository, never()).save(any(PreparedContext.class));
-	}
-
-	@Test
 	@DisplayName("create - 여러 Actor에 대한 Context 저장")
 	void create_MultipleActors_Success() {
 		// given

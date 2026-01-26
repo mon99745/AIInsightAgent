@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -33,17 +33,15 @@ public class PreparedContextService {
         return contextRepository.findByActor(actor);
     }
 
+    @Transactional
     public ContextResponse create(Actor actor, Context context) {
-        // 1. 요청 데이터 검증
-        InsightRequestValidator.validate(actor, context);
-
-        // 2. context 조회 및 중복 검증
+        // 1. context 조회 및 중복 검증
         contextRepository.findByActor(actor)
                 .ifPresent(existingContext -> {
                     throw new InsightException(InsightError.EXIST_ACTOR_PREPARED_CONTEXT, ":" + actor.getActorKey());
                 });
 
-        // 3. PreparedContext 생성 및 저장
+        // 2. PreparedContext 생성 및 저장
 		PreparedContext preparedContext =
 				new PreparedContext(actor, context.getCategory(), parserUtils.toJson(context.getData()));
 
@@ -56,15 +54,13 @@ public class PreparedContextService {
 				.build();
     }
 
+    @Transactional
     public ContextResponse get(Actor actor) {
-        // 1. 요청 데이터 점증
-        InsightRequestValidator.validateUserId(actor.getActorKey());
-
-        // 2. PreparedContext 조회 및 존재 여부 확인
+        // 1. PreparedContext 조회 및 존재 여부 확인
         PreparedContext preparedContext = contextRepository.findByActor(actor)
                 .orElseThrow(() -> new InsightException(InsightError.EMPTY_ACTOR_PREPARED_CONTEXT, ":" + actor.getActorKey()));
 
-        // 3. ContextResponse 생성
+        // 1. ContextResponse 생성
         Context context = Context.builder()
                 .userId(actor.getActorKey())
                 .category(preparedContext.getContextType())
@@ -78,14 +74,12 @@ public class PreparedContextService {
                 .build();
     }
 
+    @Transactional
     public ContextResponse update(Actor actor, Context context) {
-        // 1. 요청 데이터 검증
-        InsightRequestValidator.validate(actor, context);
-
-        // 2. PreparedContext 조회 및 존재 여부 확인
+        // 1. PreparedContext 조회 및 존재 여부 확인
         PreparedContext preparedContext = getEntity(actor);
 
-        // 3. PreparedContext 업데이트
+        // 2. PreparedContext 업데이트
         preparedContext.update(context.getCategory(), parserUtils.toJson(context.getData()));
 
         contextRepository.save(preparedContext);
@@ -97,14 +91,12 @@ public class PreparedContextService {
                 .build();
     }
 
+    @Transactional
     public ContextResponse delete(Actor actor) {
-        // 1. 요청 데이터 검증
-        InsightRequestValidator.validateUserId(actor.getActorKey());
-
-        // 2. PreparedContext 조회 및 존재 여부 확인
+        // 1. PreparedContext 조회 및 존재 여부 확인
         PreparedContext preparedContext = getEntity(actor);
 
-        // 3. PreparedContext 삭제
+        // 2. PreparedContext 삭제
         contextRepository.deleteById(preparedContext.getContextId());
 
         return ContextResponse.builder()
