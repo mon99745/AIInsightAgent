@@ -56,7 +56,7 @@ class AnalysisResultServiceTest {
 
 		// AnalysisRawData 생성
 		String runningDataJson = createRunningDataJson();
-		analysisRawData = new AnalysisRawData(actor, InputType.JSON, runningDataJson);
+		analysisRawData = new AnalysisRawData(actor, InputType.JSON, "running_style_analysis", runningDataJson);
 		ReflectionTestUtils.setField(analysisRawData, "inputId", 1L);
 		ReflectionTestUtils.setField(analysisRawData, "regDate", LocalDateTime.now());
 
@@ -250,10 +250,10 @@ class AnalysisResultServiceTest {
 		Actor actor2 = Actor.create("user-2");
 		ReflectionTestUtils.setField(actor2, "actorId", 2L);
 
-		AnalysisRawData rawData1 = new AnalysisRawData(actor1, InputType.JSON, "{}");
+		AnalysisRawData rawData1 = new AnalysisRawData(actor1, InputType.JSON, "running_style_analysis", "{}");
 		ReflectionTestUtils.setField(rawData1, "inputId", 1L);
 
-		AnalysisRawData rawData2 = new AnalysisRawData(actor2, InputType.JSON, "{}");
+		AnalysisRawData rawData2 = new AnalysisRawData(actor2, InputType.JSON, "running_style_analysis", "{}");
 		ReflectionTestUtils.setField(rawData2, "inputId", 2L);
 
 		AnalysisResult result1 = new AnalysisResult(

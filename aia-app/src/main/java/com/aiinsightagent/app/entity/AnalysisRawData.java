@@ -33,6 +33,9 @@ public class AnalysisRawData {
 	@Column(nullable = false)
 	private InputType inputType;
 
+	@Column(nullable = false)
+	private String purpose;
+
 	@Lob
 	@Column(nullable = false, columnDefinition = "LONGTEXT")
 	private String rawPayload;
@@ -43,9 +46,10 @@ public class AnalysisRawData {
 	protected AnalysisRawData() {
 	}
 
-	public AnalysisRawData(Actor actor, InputType inputType, String rawPayload) {
+	public AnalysisRawData(Actor actor, InputType inputType, String purpose, String rawPayload) {
 		this.actor = actor;
 		this.inputType = inputType;
+		this.purpose = purpose;
 		this.rawPayload = rawPayload;
 		this.regDate = LocalDateTime.now();
 	}

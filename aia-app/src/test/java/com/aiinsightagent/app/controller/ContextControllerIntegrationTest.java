@@ -179,8 +179,8 @@ class ContextControllerIntegrationTest {
 		}
 
 		@Test
-		@DisplayName("성공: 빈 데이터로 Context 저장")
-		void saveContext_EmptyData_Success() throws Exception {
+		@DisplayName("실패: 빈 데이터로 Context 저장 시 예외 발생")
+		void saveContext_EmptyData_ThrowsException() throws Exception {
 			// given
 			Context emptyDataContext = Context.builder()
 					.userId("empty-user")
@@ -194,14 +194,16 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/save")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(requestBody))
-					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.resultCode").value(200))
-					.andExpect(jsonPath("$.context.category").value("empty_category"));
+					.andDo(print())
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.code").value("AIAA-01-08"))
+					.andExpect(jsonPath("$.message").value("[COMMON][EMPTY_CONTEXT_DATA]Empty or Null, Context data."));
 
-			// DB 검증
-			Actor actor = actorRepository.findByActorKey("empty-user").orElseThrow();
-			PreparedContext savedContext = preparedContextRepository.findByActor(actor).orElseThrow();
-			assertThat(savedContext).isNotNull();
+			// DB 검증 - PreparedContext는 저장되지 않아야 함 (Actor는 먼저 생성될 수 있음)
+			Actor actor = actorRepository.findByActorKey("empty-user").orElse(null);
+			if (actor != null) {
+				assertThat(preparedContextRepository.findByActor(actor)).isEmpty();
+			}
 		}
 
 		@Test
@@ -299,7 +301,9 @@ class ContextControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(requestBody))
 					.andDo(print())
-					.andExpect(status().is5xxServerError());
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.code").exists())
+					.andExpect(jsonPath("$.message").exists());
 
 			// DB 검증 - PreparedContext는 1개만 존재
 			assertThat(preparedContextRepository.findAll()).hasSize(1);
@@ -414,7 +418,9 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/get")
 							.param("userId", "non-existent-user"))
 					.andDo(print())
-					.andExpect(status().is5xxServerError());
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.code").exists())
+					.andExpect(jsonPath("$.message").exists());
 		}
 
 		@Test
@@ -428,7 +434,9 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/get")
 							.param("userId", "test-user"))
 					.andDo(print())
-					.andExpect(status().is5xxServerError());
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.code").exists())
+					.andExpect(jsonPath("$.message").exists());
 
 			// DB 검증
 			assertThat(actorRepository.findByActorKey("test-user")).isPresent();
@@ -593,7 +601,9 @@ class ContextControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(requestBody))
 					.andDo(print())
-					.andExpect(status().is5xxServerError());
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.code").exists())
+					.andExpect(jsonPath("$.message").exists());
 		}
 
 		@Test
@@ -610,7 +620,9 @@ class ContextControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(requestBody))
 					.andDo(print())
-					.andExpect(status().is5xxServerError());
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.code").exists())
+					.andExpect(jsonPath("$.message").exists());
 		}
 	}
 
@@ -718,7 +730,9 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/delete")
 							.param("userId", "non-existent-user"))
 					.andDo(print())
-					.andExpect(status().is5xxServerError());
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.code").exists())
+					.andExpect(jsonPath("$.message").exists());
 		}
 
 		@Test
@@ -732,7 +746,9 @@ class ContextControllerIntegrationTest {
 			mockMvc.perform(post("/api/v1/context/delete")
 							.param("userId", "test-user"))
 					.andDo(print())
-					.andExpect(status().is5xxServerError());
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.code").exists())
+					.andExpect(jsonPath("$.message").exists());
 		}
 
 		@Test
@@ -817,7 +833,9 @@ class ContextControllerIntegrationTest {
 			// 6. Get - 삭제 후 조회 실패
 			mockMvc.perform(post("/api/v1/context/get")
 							.param("userId", "test-user"))
-					.andExpect(status().is5xxServerError());
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.code").exists())
+					.andExpect(jsonPath("$.message").exists());
 		}
 
 		@Test
@@ -873,7 +891,9 @@ class ContextControllerIntegrationTest {
 			// user2는 조회 실패
 			mockMvc.perform(post("/api/v1/context/get")
 							.param("userId", "user2"))
-					.andExpect(status().is5xxServerError());
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.code").exists())
+					.andExpect(jsonPath("$.message").exists());
 
 			// DB 검증
 			assertThat(actorRepository.findAll()).hasSize(3);

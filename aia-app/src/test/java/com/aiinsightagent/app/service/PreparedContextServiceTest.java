@@ -3,6 +3,8 @@ package com.aiinsightagent.app.service;
 import com.aiinsightagent.app.entity.Actor;
 import com.aiinsightagent.app.entity.PreparedContext;
 import com.aiinsightagent.app.enums.ConfidenceLevel;
+import com.aiinsightagent.app.exception.InsightAppError;
+import com.aiinsightagent.app.exception.InsightAppException;
 import com.aiinsightagent.app.repository.PreparedContextRepository;
 import com.aiinsightagent.app.util.ParserUtils;
 import com.aiinsightagent.core.exception.InsightError;
@@ -377,26 +379,21 @@ class PreparedContextServiceTest {
 	}
 
 	@Test
-	@DisplayName("create - Context 데이터가 빈 Map인 경우")
-	void create_EmptyContextData_Success() {
+	@DisplayName("create - Context 데이터가 빈 Map인 경우 예외 발생")
+	void create_EmptyContextData_ThrowsException() {
 		// given
 		Context emptyContext = Context.builder()
 				.category("empty_category")
 				.data(new HashMap<>())
 				.build();
 
-		given(contextRepository.findByActor(actor))
-				.willReturn(Optional.empty());
-		given(contextRepository.save(any(PreparedContext.class)))
-				.willReturn(preparedContext);
+		// when & then
+		assertThatThrownBy(() -> preparedContextService.create(actor, emptyContext))
+				.isInstanceOf(InsightAppException.class)
+				.extracting(e -> ((InsightAppException) e).getError())
+				.isEqualTo(InsightAppError.EMPTY_CONTEXT_DATA);
 
-		// when
-		ContextResponse result = preparedContextService.create(actor, emptyContext);
-
-		// then
-		assertThat(result).isNotNull();
-		assertThat(result.getResultCode()).isEqualTo(200);
-		verify(contextRepository, times(1)).save(any(PreparedContext.class));
+		verify(contextRepository, never()).save(any(PreparedContext.class));
 	}
 
 	@Test

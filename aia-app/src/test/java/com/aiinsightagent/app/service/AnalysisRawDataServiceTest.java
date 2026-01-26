@@ -48,6 +48,7 @@ class AnalysisRawDataServiceTest {
 	private Actor actor;
 	private List<UserPrompt> runningDataPrompts;
 	private String runningDataJsonPayload;
+	private String purpose;
 	private AnalysisRawData analysisRawData;
 
 	@BeforeEach
@@ -59,11 +60,14 @@ class AnalysisRawDataServiceTest {
 		// 러닝 데이터 UserPrompt 리스트 생성
 		runningDataPrompts = createRunningDataPrompts();
 
+		// purpose 설정
+		purpose = "running_style_analysis";
+
 		// JSON payload (실제 러닝 데이터 형식)
 		runningDataJsonPayload = createRunningDataJson();
 
 		// AnalysisRawData 생성
-		analysisRawData = new AnalysisRawData(actor, InputType.JSON, runningDataJsonPayload);
+		analysisRawData = new AnalysisRawData(actor, InputType.JSON, "running_style_analysis", runningDataJsonPayload);
 		ReflectionTestUtils.setField(analysisRawData, "inputId", 1L);
 		ReflectionTestUtils.setField(analysisRawData, "regDate", LocalDateTime.now());
 	}
@@ -128,7 +132,7 @@ class AnalysisRawDataServiceTest {
 				.willReturn(analysisRawData);
 
 		// when
-		AnalysisRawData result = analysisRawDataService.save(actor, runningDataPrompts);
+		AnalysisRawData result = analysisRawDataService.save(actor, purpose, runningDataPrompts);
 
 		// then
 		assertThat(result).isNotNull();
@@ -157,7 +161,7 @@ class AnalysisRawDataServiceTest {
 				.willReturn(analysisRawData);
 
 		// when
-		AnalysisRawData result = analysisRawDataService.save(actor, tenRunningData);
+		AnalysisRawData result = analysisRawDataService.save(actor, purpose, tenRunningData);
 
 		// then
 		assertThat(result).isNotNull();
@@ -174,7 +178,7 @@ class AnalysisRawDataServiceTest {
 				.willThrow(new JsonProcessingException("Serialization error") {});
 
 		// when & then
-		assertThatThrownBy(() -> analysisRawDataService.save(actor, runningDataPrompts))
+		assertThatThrownBy(() -> analysisRawDataService.save(actor, purpose, runningDataPrompts))
 				.isInstanceOf(InsightException.class)
 				.extracting(e -> ((InsightException) e).getError())
 				.isEqualTo(InsightAppError.FAIL_JSON_SERIALIZATION);
@@ -222,15 +226,15 @@ class AnalysisRawDataServiceTest {
 	@DisplayName("getUserPromtListByActor - 여러 세션의 러닝 데이터 병합")
 	void getUserPromtListByActor_MultipleRunningSessions_Success() throws JsonProcessingException {
 		// given
-		AnalysisRawData session1 = new AnalysisRawData(actor, InputType.JSON, runningDataJsonPayload);
+		AnalysisRawData session1 = new AnalysisRawData(actor, InputType.JSON, "running_style_analysis", runningDataJsonPayload);
 		ReflectionTestUtils.setField(session1, "inputId", 1L);
 		ReflectionTestUtils.setField(session1, "regDate", LocalDateTime.now().minusDays(2));
 
-		AnalysisRawData session2 = new AnalysisRawData(actor, InputType.JSON, runningDataJsonPayload);
+		AnalysisRawData session2 = new AnalysisRawData(actor, InputType.JSON, "running_style_analysis", runningDataJsonPayload);
 		ReflectionTestUtils.setField(session2, "inputId", 2L);
 		ReflectionTestUtils.setField(session2, "regDate", LocalDateTime.now().minusDays(1));
 
-		AnalysisRawData session3 = new AnalysisRawData(actor, InputType.JSON, runningDataJsonPayload);
+		AnalysisRawData session3 = new AnalysisRawData(actor, InputType.JSON, "running_style_analysis", runningDataJsonPayload);
 		ReflectionTestUtils.setField(session3, "inputId", 3L);
 		ReflectionTestUtils.setField(session3, "regDate", LocalDateTime.now());
 
@@ -313,7 +317,7 @@ class AnalysisRawDataServiceTest {
 			throws JsonProcessingException {
 		// given
 		String corruptedJson = "[{\"dataKey\":\"invalid\",\"data\":{\"duration\":";
-		AnalysisRawData corruptedData = new AnalysisRawData(actor, InputType.JSON, corruptedJson);
+		AnalysisRawData corruptedData = new AnalysisRawData(actor, InputType.JSON, "running_style_analysis", corruptedJson);
 		ReflectionTestUtils.setField(corruptedData, "inputId", 99L);
 
 		List<AnalysisRawData> rawDataList = Arrays.asList(corruptedData);
@@ -378,7 +382,7 @@ class AnalysisRawDataServiceTest {
 		// given
 		List<UserPrompt> emptyList = Collections.emptyList();
 		String emptyJson = "[]";
-		AnalysisRawData emptyRawData = new AnalysisRawData(actor, InputType.JSON, emptyJson);
+		AnalysisRawData emptyRawData = new AnalysisRawData(actor, InputType.JSON, "running_style_analysis", emptyJson);
 		ReflectionTestUtils.setField(emptyRawData, "inputId", 2L);
 
 		given(objectMapper.writeValueAsString(emptyList))
@@ -387,7 +391,7 @@ class AnalysisRawDataServiceTest {
 				.willReturn(emptyRawData);
 
 		// when
-		AnalysisRawData result = analysisRawDataService.save(actor, emptyList);
+		AnalysisRawData result = analysisRawDataService.save(actor, purpose, emptyList);
 
 		// then
 		assertThat(result).isNotNull();
