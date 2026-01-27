@@ -5,6 +5,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import java.util.Optional;
 
 public class ExceptionUtil {
+	private ExceptionUtil() {
+	}
+
 	/**
 	 * 원인 예외가 아니면 메세지를, 원인 예외 이면 ""를 반환
 	 *

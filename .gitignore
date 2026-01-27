@@ -40,6 +40,10 @@ out/
 ### Claude ###
 **/.claude/**
 
+### SonarQube ###
+**/sonar/**
+**/sonar_*
+
 ### Postman ###
 **/postman/**
 

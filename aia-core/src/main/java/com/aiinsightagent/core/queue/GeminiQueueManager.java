@@ -1,5 +1,6 @@
 package com.aiinsightagent.core.queue;
 
+import com.aiinsightagent.common.filter.TraceIdHolder;
 import com.aiinsightagent.core.config.GeminiProperties;
 import com.aiinsightagent.core.config.RequestQueueProperties;
 import com.google.genai.Models;
@@ -77,7 +78,7 @@ public class GeminiQueueManager {
 			return future;
 		}
 
-		GeminiRequest request = new GeminiRequest(prompt);
+		GeminiRequest request = new GeminiRequest(prompt, TraceIdHolder.getTraceId());
 
 		boolean offered = requestQueue.offer(request);
 		if (!offered) {

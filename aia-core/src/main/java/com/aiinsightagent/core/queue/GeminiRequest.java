@@ -10,11 +10,13 @@ import java.util.concurrent.CompletableFuture;
 @Getter
 public class GeminiRequest {
 	private final String prompt;
+	private final String traceId;
 	private final CompletableFuture<GeminiResponse> future;
 	private final long createdAt;
 
-	public GeminiRequest(String prompt) {
+	public GeminiRequest(String prompt, String traceId) {
 		this.prompt = prompt;
+		this.traceId = traceId;
 		this.future = new CompletableFuture<>();
 		this.createdAt = System.currentTimeMillis();
 	}

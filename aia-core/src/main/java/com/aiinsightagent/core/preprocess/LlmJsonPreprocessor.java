@@ -18,8 +18,8 @@ public class LlmJsonPreprocessor {
 
 		// 1. Markdown 코드블록 제거 (```json, ``` 등)
 		if (cleaned.startsWith("```")) {
-			cleaned = cleaned.replaceAll("```json", "")
-					.replaceAll("```", "")
+			cleaned = cleaned.replace("```json", "")
+					.replace("```", "")
 					.trim();
 		}
 

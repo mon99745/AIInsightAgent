@@ -13,6 +13,9 @@ import org.springframework.util.CollectionUtils;
 import java.util.Map;
 
 public class InsightRequestValidator {
+	private InsightRequestValidator() {
+	}
+
 	public static void validate(InsightRequest request) {
 		if (!hasUserPrompt(request)) {
 			throw new InsightAppException(InsightAppError.MISSING_USER_PROMPT_REQUEST);

@@ -1,5 +1,6 @@
 package com.aiinsightagent.core.queue;
 
+import com.aiinsightagent.common.filter.TraceIdFilter;
 import com.aiinsightagent.core.config.GeminiProperties;
 import com.aiinsightagent.core.model.TokenUsage;
 import com.aiinsightagent.core.util.GeminiTokenExtractor;
@@ -7,6 +8,7 @@ import com.google.genai.Models;
 import com.google.genai.types.GenerateContentConfig;
 import com.google.genai.types.GenerateContentResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -61,31 +63,36 @@ public class GeminiWorker implements Runnable {
 	}
 
 	private void processRequest(GeminiRequest request) {
-		long waitTime = System.currentTimeMillis() - request.getCreatedAt();
-		long startTime = System.currentTimeMillis();
-
+		MDC.put(TraceIdFilter.TRACE_ID_MDC_KEY, request.getTraceId());
 		try {
-			GenerateContentConfig config = buildConfig();
+			long waitTime = System.currentTimeMillis() - request.getCreatedAt();
+			long startTime = System.currentTimeMillis();
 
-			GenerateContentResponse response = models.generateContent(
-					modelConfig.getName(),
-					request.getPrompt(),
-					config
-			);
+			try {
+				GenerateContentConfig config = buildConfig();
 
-			long duration = System.currentTimeMillis() - startTime;
-			TokenUsage tokenUsage = GeminiTokenExtractor.extract(response);
+				GenerateContentResponse response = models.generateContent(
+						modelConfig.getName(),
+						request.getPrompt(),
+						config
+				);
 
-			log.info("[{}] modelId={}, model={}, waitTime={}ms, apiTime={}ms",
-					workerName, modelConfig.getId(), modelConfig.getName(), waitTime, duration);
-			log.debug("[{}] tokens: prompt={}, completion={}, total={}",
-					workerName, tokenUsage.getPromptTokens(),
-					tokenUsage.getCompletionTokens(), tokenUsage.getTotalTokens());
+				long duration = System.currentTimeMillis() - startTime;
+				TokenUsage tokenUsage = GeminiTokenExtractor.extract(response);
 
-			request.getFuture().complete(new GeminiResponse(response, modelConfig.getId(), modelConfig.getName()));
-		} catch (Exception e) {
-			log.error("[{}] API call failed: {}", workerName, e.getMessage(), e);
-			request.getFuture().completeExceptionally(e);
+				log.info("[{}] modelId={}, model={}, waitTime={}ms, apiTime={}ms",
+						workerName, modelConfig.getId(), modelConfig.getName(), waitTime, duration);
+				log.debug("[{}] tokens: prompt={}, completion={}, total={}",
+						workerName, tokenUsage.getPromptTokens(),
+						tokenUsage.getCompletionTokens(), tokenUsage.getTotalTokens());
+
+				request.getFuture().complete(new GeminiResponse(response, modelConfig.getId(), modelConfig.getName()));
+			} catch (Exception e) {
+				log.error("[{}] API call failed: {}", workerName, e.getMessage(), e);
+				request.getFuture().completeExceptionally(e);
+			}
+		} finally {
+			MDC.remove(TraceIdFilter.TRACE_ID_MDC_KEY);
 		}
 	}
 

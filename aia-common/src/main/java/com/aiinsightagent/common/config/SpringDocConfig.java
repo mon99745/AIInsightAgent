@@ -37,13 +37,11 @@ public class SpringDocConfig {
 				.description(props.getDescription())
 				.contact(contact);
 
-		OpenAPI openAPI = new OpenAPI().info(info)
+		return new OpenAPI().info(info)
 				.servers(List.of(
 						new Server()
 								.url(serverUrl)
 								.description(serverDescription)
 				));
-
-		return openAPI;
 	}
 }
