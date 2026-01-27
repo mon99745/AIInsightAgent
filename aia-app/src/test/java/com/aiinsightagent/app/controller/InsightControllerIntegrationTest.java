@@ -888,7 +888,7 @@ class InsightControllerIntegrationTest {
 							.content(requestBody))
 					.andDo(print())
 					.andExpect(status().isTooManyRequests())
-					.andExpect(jsonPath("$.code").value(429))
+					.andExpect(jsonPath("$.code").value("RATE_LIMIT_EXCEEDED"))
 					.andExpect(jsonPath("$.message").exists())
 					.andExpect(jsonPath("$.path").value("/api/v1/analysis"));
 		}
@@ -906,7 +906,7 @@ class InsightControllerIntegrationTest {
 							.param("prompt", "Test prompt"))
 					.andDo(print())
 					.andExpect(status().isTooManyRequests())
-					.andExpect(jsonPath("$.code").value(429))
+					.andExpect(jsonPath("$.code").value("RATE_LIMIT_EXCEEDED"))
 					.andExpect(jsonPath("$.message").exists())
 					.andExpect(jsonPath("$.path").value("/api/v1/answer"));
 		}
@@ -949,7 +949,7 @@ class InsightControllerIntegrationTest {
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(requestBody))
 					.andExpect(status().isTooManyRequests())
-					.andExpect(jsonPath("$.code").value(429));
+					.andExpect(jsonPath("$.code").value("RATE_LIMIT_EXCEEDED"));
 		}
 
 		@Test
@@ -968,7 +968,7 @@ class InsightControllerIntegrationTest {
 							.content(requestBody))
 					.andDo(print())
 					.andExpect(status().isTooManyRequests())
-					.andExpect(jsonPath("$.code").value(429))
+					.andExpect(jsonPath("$.code").value("RATE_LIMIT_EXCEEDED"))
 					.andExpect(jsonPath("$.message").isNotEmpty());
 		}
 	}

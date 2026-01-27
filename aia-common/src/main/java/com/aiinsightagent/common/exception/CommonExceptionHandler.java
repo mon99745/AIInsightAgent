@@ -2,6 +2,7 @@ package com.aiinsightagent.common.exception;
 
 import com.aiinsightagent.common.filter.TraceIdHolder;
 import com.google.genai.errors.ClientException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -18,6 +19,7 @@ import java.util.Map;
 /**
  * 공통 모듈용 글로벌 예외 처리
  */
+@Slf4j
 @RestControllerAdvice
 public class CommonExceptionHandler {
 
@@ -54,9 +56,11 @@ public class CommonExceptionHandler {
 			HttpMessageNotReadableException ex,
 			HttpServletRequest request) {
 
+		log.warn("Invalid JSON request: {}", ex.getMessage());
+
 		Map<String, Object> body = buildErrorBody(
 				"INVALID_JSON",
-				"Request body is not valid JSON: " + ex.getMostSpecificCause().getMessage(),
+				"Request body is not valid JSON",
 				request.getRequestURI()
 		);
 
@@ -114,9 +118,11 @@ public class CommonExceptionHandler {
 			ClientException ex,
 			HttpServletRequest request) {
 
+		log.warn("Gemini API client error: code={}, message={}", ex.code(), ex.getMessage());
+
 		Map<String, Object> body = buildErrorBody(
-				String.valueOf(ex.code()),
-				ex.getMessage(),
+				"RATE_LIMIT_EXCEEDED",
+				"API rate limit exceeded. Please try again later.",
 				request.getRequestURI()
 		);
 
@@ -128,9 +134,11 @@ public class CommonExceptionHandler {
 	public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex,
 																	  HttpServletRequest request) {
 
+		log.error("Unexpected error occurred: {} {}", request.getMethod(), request.getRequestURI(), ex);
+
 		Map<String, Object> body = buildErrorBody(
 				"INTERNAL_ERROR",
-				ex.getMessage(),
+				"An unexpected error occurred. Please contact support with traceId.",
 				request.getRequestURI()
 		);
 
