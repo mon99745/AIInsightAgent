@@ -98,8 +98,7 @@ class ActorServiceTest {
 		// when & then
 		assertThatThrownBy(() -> actorService.get(actorKey))
 				.isInstanceOf(InsightException.class)
-				.hasMessageContaining(InsightError.NOT_FOUND_ACTOR.toString())
-				.hasMessageContaining(actorKey);
+				.hasMessageContaining(InsightError.NOT_FOUND_ACTOR.toString());
 
 		verify(actorRepository, times(1)).findByActorKey(actorKey);
 	}

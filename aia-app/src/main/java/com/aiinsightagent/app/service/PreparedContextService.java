@@ -26,7 +26,7 @@ public class PreparedContextService {
 
 	private PreparedContext getEntity(Actor actor) {
 		return contextRepository.findByActor(actor)
-				.orElseThrow(() -> new InsightException(InsightError.EMPTY_ACTOR_PREPARED_CONTEXT, ":" + actor.getActorKey()));
+				.orElseThrow(() -> new InsightException(InsightError.EMPTY_ACTOR_PREPARED_CONTEXT));
 	}
 
     public Optional<PreparedContext> findByActorKey(Actor actor) {
@@ -38,7 +38,7 @@ public class PreparedContextService {
         // 1. context 조회 및 중복 검증
         contextRepository.findByActor(actor)
                 .ifPresent(existingContext -> {
-                    throw new InsightException(InsightError.EXIST_ACTOR_PREPARED_CONTEXT, ":" + actor.getActorKey());
+                    throw new InsightException(InsightError.EXIST_ACTOR_PREPARED_CONTEXT);
                 });
 
         // 2. PreparedContext 생성 및 저장
@@ -58,7 +58,7 @@ public class PreparedContextService {
     public ContextResponse get(Actor actor) {
         // 1. PreparedContext 조회 및 존재 여부 확인
         PreparedContext preparedContext = contextRepository.findByActor(actor)
-                .orElseThrow(() -> new InsightException(InsightError.EMPTY_ACTOR_PREPARED_CONTEXT, ":" + actor.getActorKey()));
+                .orElseThrow(() -> new InsightException(InsightError.EMPTY_ACTOR_PREPARED_CONTEXT));
 
         // 1. ContextResponse 생성
         Context context = Context.builder()

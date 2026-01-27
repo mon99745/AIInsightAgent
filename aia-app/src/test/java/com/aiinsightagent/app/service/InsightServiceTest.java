@@ -424,13 +424,12 @@ class InsightServiceTest {
 		String userId = "non-existent-user";
 
 		given(actorService.get(userId))
-				.willThrow(new InsightException(InsightError.NOT_FOUND_ACTOR, ":" + userId));
+				.willThrow(new InsightException(InsightError.NOT_FOUND_ACTOR));
 
 		// when & then
 		assertThatThrownBy(() -> insightService.getHistory(userId))
 				.isInstanceOf(InsightException.class)
-				.hasMessageContaining(InsightError.NOT_FOUND_ACTOR.toString())
-				.hasMessageContaining(userId);
+				.hasMessageContaining(InsightError.NOT_FOUND_ACTOR.toString());
 
 		verify(actorService, times(1)).get(userId);
 		verifyNoInteractions(rawDataService);

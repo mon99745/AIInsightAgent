@@ -175,8 +175,7 @@ class PreparedContextServiceTest {
 		// when & then
 		assertThatThrownBy(() -> preparedContextService.create(actor, context))
 				.isInstanceOf(InsightException.class)
-				.hasMessageContaining(InsightError.EXIST_ACTOR_PREPARED_CONTEXT.toString())
-				.hasMessageContaining(actor.getActorKey());
+				.hasMessageContaining(InsightError.EXIST_ACTOR_PREPARED_CONTEXT.toString());
 
 		verify(contextRepository, times(1)).findByActor(actor);
 		verify(contextRepository, never()).save(any(PreparedContext.class));
@@ -238,8 +237,7 @@ class PreparedContextServiceTest {
 		// when & then
 		assertThatThrownBy(() -> preparedContextService.get(actor))
 				.isInstanceOf(InsightException.class)
-				.hasMessageContaining(InsightError.EMPTY_ACTOR_PREPARED_CONTEXT.toString())
-				.hasMessageContaining(actor.getActorKey());
+				.hasMessageContaining(InsightError.EMPTY_ACTOR_PREPARED_CONTEXT.toString());
 
 		verify(contextRepository, times(1)).findByActor(actor);
 	}
@@ -285,8 +283,7 @@ class PreparedContextServiceTest {
 		// when & then
 		assertThatThrownBy(() -> preparedContextService.update(actor, context))
 				.isInstanceOf(InsightException.class)
-				.hasMessageContaining(InsightError.EMPTY_ACTOR_PREPARED_CONTEXT.toString())
-				.hasMessageContaining(actor.getActorKey());
+				.hasMessageContaining(InsightError.EMPTY_ACTOR_PREPARED_CONTEXT.toString());
 
 		verify(contextRepository, times(1)).findByActor(actor);
 		verify(contextRepository, never()).save(any(PreparedContext.class));
@@ -348,8 +345,7 @@ class PreparedContextServiceTest {
 		// when & then
 		assertThatThrownBy(() -> preparedContextService.delete(actor))
 				.isInstanceOf(InsightException.class)
-				.hasMessageContaining(InsightError.EMPTY_ACTOR_PREPARED_CONTEXT.toString())
-				.hasMessageContaining(actor.getActorKey());
+				.hasMessageContaining(InsightError.EMPTY_ACTOR_PREPARED_CONTEXT.toString());
 
 		verify(contextRepository, times(1)).findByActor(actor);
 		verify(contextRepository, never()).deleteById(any());
