@@ -3,6 +3,9 @@ package com.aiinsightagent.common.util;
 import java.util.regex.Pattern;
 
 public class IPCheckUtil {
+	private IPCheckUtil() {
+	}
+
 	// IPv4 정규식
 	private static final String IPV4_REGEX =
 			"^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)(\\.|$)){4}$";

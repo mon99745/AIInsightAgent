@@ -40,13 +40,11 @@ public interface Error
 	}
 
 	default String toCodeString() {
-//		return StringUtil.toCodeString(name(), getMessage());
 		String name = "".equals(name()) || DefaultError.NONE.name().equals(name()) ? "" : "][" + name();
-//		String serverInfo = SpringUtil.getServerInfo(); // ex) localhost:8010
-		String serverInfo = SpringUtil.getEnvironment() // ex) common
+		String serverInfo = SpringUtil.getEnvironment()
 				.map(a -> a.getProperty(SpringUtil.SPRING_CONFIG_NAME))
 				.orElse("");
-		return StringUtil.toCodeString(serverInfo + name, getMessage()); // error
+		return StringUtil.toCodeString(serverInfo + name, getMessage());
 	}
 
 	/**
