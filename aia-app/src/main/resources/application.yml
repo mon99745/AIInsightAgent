@@ -71,3 +71,16 @@ aiinsight:
       queue-capacity: 100
       request-timeout-seconds: 60
       shutdown-timeout-seconds: 30
+
+### Actuator 설정 (GC/메모리 모니터링)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.config.name}
