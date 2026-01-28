@@ -43,6 +43,7 @@ out/
 ### SonarQube ###
 **/sonar/**
 **/sonar_*
+sonar-env.bat
 
 ### Postman ###
 **/postman/**
