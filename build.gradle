@@ -20,12 +20,20 @@ allprojects {
 }
 sonar {
 	properties {
-		property "sonar.projectKey", "aiinsight-agent"
+		// SonarCloud 설정
+		property "sonar.host.url", "https://sonarcloud.io"
+		property "sonar.organization", System.getenv("SONAR_ORGANIZATION") ?: "your-organization"
+		property "sonar.projectKey", System.getenv("SONAR_PROJECT_KEY") ?: "aiinsight-agent"
 		property "sonar.projectName", "AIInsight Agent"
-		property "sonar.host.url", "http://localhost:9000"
 		property "sonar.token", System.getenv("SONAR_TOKEN") ?: ""
 		property "sonar.sourceEncoding", "UTF-8"
 		property "sonar.java.source", "17"
+
+		// JaCoCo 커버리지 리포트 경로
+		property "sonar.coverage.jacoco.xmlReportPaths",
+				"${project(':aia-app').projectDir}/build/reports/jacoco/test/jacocoTestReport.xml," +
+				"${project(':aia-common').projectDir}/build/reports/jacoco/test/jacocoTestReport.xml," +
+				"${project(':aia-core').projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
 	}
 }
 

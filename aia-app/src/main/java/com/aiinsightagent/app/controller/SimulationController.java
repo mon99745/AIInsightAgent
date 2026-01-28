@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Math.round;
 
@@ -24,7 +25,6 @@ import static java.lang.Math.round;
 public class SimulationController {
     public static final String TAG = "Simulation API";
     public static final String PATH = "/api/v1/simulation";
-    private static final Random RANDOM = new Random();
 
     @Operation(summary = "[테스트용] UUID(userId) 생성")
     @GetMapping("createUuid")
@@ -46,10 +46,10 @@ public class SimulationController {
             prompt.put("dataKey", "running_session_" + i);
 
             Map<String, Object> data = new LinkedHashMap<>();
-            data.put("duration", 900 + RANDOM.nextInt(2701));
-            data.put("heartRate", round(160 + RANDOM.nextDouble() * 35));
-            data.put("distance", round(3 + RANDOM.nextDouble() * 7.5));
-            data.put("stepCount", 3000 + RANDOM.nextInt(8001));
+            data.put("duration", 900 + ThreadLocalRandom.current().nextInt(2701));
+            data.put("heartRate", round(160 + ThreadLocalRandom.current().nextDouble() * 35));
+            data.put("distance", round(3 + ThreadLocalRandom.current().nextDouble() * 7.5));
+            data.put("stepCount", 3000 + ThreadLocalRandom.current().nextInt(8001));
 
             prompt.put("data", data);
             userPromptList.add(prompt);
@@ -71,10 +71,10 @@ public class SimulationController {
         root.put("category", "user_profile");
 
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("age", 20 + RANDOM.nextInt(31));        // 20 ~ 50
-        data.put("gender", RANDOM.nextBoolean() ? "MALE" : "FEMALE");
-        data.put("height", 160 + RANDOM.nextInt(21));   // 160 ~ 180
-        data.put("weight", 55 + RANDOM.nextInt(26));    // 55 ~ 80
+        data.put("age", 20 + ThreadLocalRandom.current().nextInt(31));        // 20 ~ 50
+        data.put("gender", ThreadLocalRandom.current().nextBoolean() ? "MALE" : "FEMALE");
+        data.put("height", 160 + ThreadLocalRandom.current().nextInt(21));   // 160 ~ 180
+        data.put("weight", 55 + ThreadLocalRandom.current().nextInt(26));    // 55 ~ 80
 
         root.put("data", data);
 
