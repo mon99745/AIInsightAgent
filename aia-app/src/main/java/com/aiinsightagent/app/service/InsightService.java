@@ -35,29 +35,33 @@ public class InsightService {
 		log.info("analysis called with purpose: {}, userPrompts: {}"
 				, data.getPurpose(), data.getUserPrompt());
 
-		// 1. 요청 데이터 검증
-		InsightRequestValidator.validate(data);
+		try {
+			// 1. 요청 데이터 검증
+			InsightRequestValidator.validate(data);
 
-		// 2. 접근 주체 조회 및 저장
-		Actor actor = actorService.getOrCreate(data.getUserId());
+			// 2. 접근 주체 조회 및 저장
+			Actor actor = actorService.getOrCreate(data.getUserId());
 
-		// 3. 원본 데이터 저장
-		AnalysisRawData rawData = rawDataService.save(actor, data.getPurpose(), data.getUserPrompt());
+			// 3. 원본 데이터 저장
+			AnalysisRawData rawData = rawDataService.save(actor, data.getPurpose(), data.getUserPrompt());
 
-		// 4. 전처리 데이터 조회
-		String contextText = contextService.findByActorKey(actor)
-				.map(PreparedContext::asPromptText)
-				.orElse(null);
+			// 4. 전처리 데이터 조회
+			String contextText = contextService.findByActorKey(actor)
+					.map(PreparedContext::asPromptText)
+					.orElse(null);
 
-		// 5. 분석 요청
-		InsightResponse response = insightFacade.analysis(data, contextText);
+			// 5. 분석 요청
+			InsightResponse response = insightFacade.analysis(data, contextText);
 
-		// 6. 결과 저장
-		String analysisVersion = GeminiContext.getAnalysisVersion();
-		resultService.save(actor, rawData, response, analysisVersion);
-		GeminiContext.clear();
+			// 6. 결과 저장
+			String analysisVersion = GeminiContext.getAnalysisVersion();
+			resultService.save(actor, rawData, response, analysisVersion);
 
-		return response;
+			return response;
+		} finally {
+			// ThreadLocal 메모리 누수 방지
+			GeminiContext.clear();
+		}
 	}
 
 	public InsightHistoryResponse getHistory(String userId) {
