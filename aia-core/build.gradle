@@ -3,6 +3,14 @@ plugins {
 	id 'war'
 }
 
+bootJar {
+	enabled = false
+}
+
+bootWar {
+	enabled = false
+}
+
 war {
 	enabled = false
 }
