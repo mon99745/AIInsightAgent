@@ -38,6 +38,7 @@ public class AnalysisResult {
 	@JoinColumn(name = "input_id", nullable = false)
 	private AnalysisRawData analysisInput;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private AnalysisType analysisType;
 
