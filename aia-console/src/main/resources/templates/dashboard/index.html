@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="label">Total Analysis</div>
+            <div class="value info" th:text="${summary.totalAnalysis}">0</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Success</div>
+            <div class="value success" th:text="${summary.successCount}">0</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Failed</div>
+            <div class="value danger" th:text="${summary.failedCount}">0</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">App Health</div>
+            <div th:class="'value ' + (${summary.appHealthStatus == 'UP'} ? 'success' : 'danger')"
+                 th:text="${summary.appHealthStatus}">UNKNOWN</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Recent Analysis Results</div>
+        <div class="card-body">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Request ID</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Version</th>
+                            <th>Date</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="result : ${recentResults.content}">
+                            <td th:text="${result.resultId}"></td>
+                            <td th:text="${result.requestId != null ? #strings.abbreviate(result.requestId.toString(), 16) : '-'}"></td>
+                            <td th:text="${result.analysisType}"></td>
+                            <td>
+                                <span th:class="'badge ' + (${result.status == 'SUCCESS'} ? 'badge-success' : 'badge-danger')"
+                                      th:text="${result.status}"></span>
+                            </td>
+                            <td th:text="${result.analysisVersion ?: '-'}"></td>
+                            <td th:text="${result.regDate != null ? #temporals.format(result.regDate, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
+                            <td>
+                                <a th:href="@{/analysis/{id}(id=${result.resultId})}" class="btn btn-sm btn-primary">View</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${recentResults.content.isEmpty()}">
+                            <td colspan="7" style="text-align:center; color:#95a5a6;">No data</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination" th:if="${recentResults.totalPages > 1}">
+                <a th:if="${recentResults.number > 0}"
+                   th:href="@{/dashboard(page=${recentResults.number - 1}, size=${recentResults.size})}">&laquo; Prev</a>
+                <th:block th:each="i : ${#numbers.sequence(0, recentResults.totalPages - 1)}">
+                    <a th:if="${i != recentResults.number}"
+                       th:href="@{/dashboard(page=${i}, size=${recentResults.size})}"
+                       th:text="${i + 1}"></a>
+                    <span th:if="${i == recentResults.number}" class="current" th:text="${i + 1}"></span>
+                </th:block>
+                <a th:if="${recentResults.number < recentResults.totalPages - 1}"
+                   th:href="@{/dashboard(page=${recentResults.number + 1}, size=${recentResults.size})}">Next &raquo;</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

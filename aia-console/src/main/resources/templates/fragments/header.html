@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header th:fragment="header" class="console-header">
+    <div class="header-title">
+        <h1 th:text="${pageTitle ?: 'AIA Console'}">AIA Console</h1>
+    </div>
+    <div class="header-info">
+        <span class="header-time" id="currentTime"></span>
+    </div>
+</header>
+</body>
+</html>
