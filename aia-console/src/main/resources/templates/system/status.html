@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>System Status</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="card">
+        <div class="card-header">App Server Health</div>
+        <div class="card-body">
+            <div style="margin-bottom: 16px;">
+                <span th:class="'status-indicator ' + (${health['status'] == 'UP'} ? 'up' : 'down')"></span>
+                <strong th:text="${health['status'] ?: 'UNKNOWN'}">UNKNOWN</strong>
+            </div>
+            <div class="table-container" th:if="${health['components'] != null}">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Status</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="entry : ${health['components']}">
+                            <td th:text="${entry.key}"></td>
+                            <td>
+                                <span th:class="'badge ' + (${entry.value['status'] == 'UP'} ? 'badge-success' : 'badge-danger')"
+                                      th:text="${entry.value['status']}"></span>
+                            </td>
+                            <td>
+                                <span th:if="${entry.value['details'] != null}"
+                                      th:text="${entry.value['details']}"></span>
+                                <span th:if="${entry.value['details'] == null}">-</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${health['components'] == null}" class="alert alert-warning">
+                Health details are not available. The app server may be down.
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">App Info</div>
+        <div class="card-body">
+            <div th:if="${info != null && !info.isEmpty()}">
+                <dl class="detail-grid">
+                    <th:block th:each="entry : ${info}">
+                        <dt th:text="${entry.key}"></dt>
+                        <dd th:text="${entry.value}"></dd>
+                    </th:block>
+                </dl>
+            </div>
+            <div th:if="${info == null || info.isEmpty()}" class="alert alert-info">
+                No additional info available.
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

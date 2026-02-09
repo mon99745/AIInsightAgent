@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="sidebar" class="console-sidebar">
+    <div class="sidebar-brand">
+        <h2>AIA Console</h2>
+    </div>
+    <ul class="sidebar-nav">
+        <li>
+            <a th:href="@{/dashboard}" th:classappend="${currentPath != null and #strings.startsWith(currentPath, '/dashboard') ? 'active' : ''}">
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/analysis}" th:classappend="${currentPath != null and #strings.startsWith(currentPath, '/analysis') ? 'active' : ''}">
+                Analysis Monitor
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/system/status}" th:classappend="${currentPath != null and #strings.startsWith(currentPath, '/system') ? 'active' : ''}">
+                System Status
+            </a>
+        </li>
+<!--        <li>-->
+<!--            <a href="#" class="disabled" style="opacity:0.4; pointer-events:none;">-->
+<!--                Settings (준비중)-->
+<!--            </a>-->
+<!--        </li>-->
+    </ul>
+</nav>
+</body>
+</html>

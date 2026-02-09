@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>Analysis Monitor</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="card" style="margin-bottom: 20px;">
+        <div class="card-body">
+            <form th:action="@{/analysis}" method="get" class="search-form">
+                <div class="search-form-group">
+                    <label class="search-label">Period</label>
+                    <div class="search-date-range">
+                        <input type="date" name="startDate" class="form-control form-control-sm"
+                               th:value="${currentStartDate}" />
+                        <span class="search-date-separator">~</span>
+                        <input type="date" name="endDate" class="form-control form-control-sm"
+                               th:value="${currentEndDate}" />
+                    </div>
+                </div>
+                <div class="search-form-group">
+                    <label class="search-label">Request ID</label>
+                    <input type="text" name="requestId" class="form-control form-control-sm"
+                           th:value="${currentRequestId}" placeholder="UUID" />
+                </div>
+                <div class="search-form-group">
+                    <label class="search-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All</option>
+                        <option value="SUCCESS" th:selected="${currentStatus == 'SUCCESS'}">SUCCESS</option>
+                        <option value="FAILED" th:selected="${currentStatus == 'FAILED'}">FAILED</option>
+                    </select>
+                </div>
+                <div class="search-form-group">
+                    <label class="search-label">Type</label>
+                    <select name="type" class="form-select">
+                        <option value="">All</option>
+                        <option value="STYLE" th:selected="${currentType == 'STYLE'}">STYLE</option>
+                        <option value="PATTERN" th:selected="${currentType == 'PATTERN'}">PATTERN</option>
+                        <option value="CLASSIFICATION" th:selected="${currentType == 'CLASSIFICATION'}">CLASSIFICATION</option>
+                    </select>
+                </div>
+                <div class="search-form-group">
+                    <label class="search-label">Version</label>
+                    <input type="text" name="version" class="form-control form-control-sm"
+                           th:value="${currentVersion}" placeholder="Version" />
+                </div>
+                <div class="search-form-actions">
+                    <button type="submit" class="btn btn-sm btn-primary">Search</button>
+                    <a th:href="@{/analysis}" class="btn btn-sm btn-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Analysis Results</div>
+        <div class="card-body">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Request ID</th>
+                            <th>Actor ID</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Version</th>
+                            <th>Date</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="result : ${results.content}">
+                            <td th:text="${result.resultId}"></td>
+                            <td th:text="${result.requestId != null ? #strings.abbreviate(result.requestId.toString(), 16) : '-'}"></td>
+                            <td th:text="${result.actorId}"></td>
+                            <td th:text="${result.analysisTypeName}"></td>
+                            <td>
+                                <span th:class="'badge ' + (${result.status == 'SUCCESS'} ? 'badge-success' : 'badge-danger')"
+                                      th:text="${result.status}"></span>
+                            </td>
+                            <td th:text="${result.analysisVersion ?: '-'}"></td>
+                            <td th:text="${result.regDate != null ? #temporals.format(result.regDate, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
+                            <td>
+                                <a th:href="@{/analysis/{id}(id=${result.resultId})}" class="btn btn-sm btn-primary">View</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${results.content.isEmpty()}">
+                            <td colspan="8" style="text-align:center; color:#95a5a6;">No data</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination" th:if="${results.totalPages > 1}">
+                <a th:if="${results.number > 0}"
+                   th:href="@{/analysis(page=${results.number - 1}, size=${results.size}, status=${currentStatus}, type=${currentType}, requestId=${currentRequestId}, version=${currentVersion}, startDate=${currentStartDate}, endDate=${currentEndDate})}">&laquo; Prev</a>
+                <th:block th:each="i : ${#numbers.sequence(0, results.totalPages - 1)}">
+                    <a th:if="${i != results.number}"
+                       th:href="@{/analysis(page=${i}, size=${results.size}, status=${currentStatus}, type=${currentType}, requestId=${currentRequestId}, version=${currentVersion}, startDate=${currentStartDate}, endDate=${currentEndDate})}"
+                       th:text="${i + 1}"></a>
+                    <span th:if="${i == results.number}" class="current" th:text="${i + 1}"></span>
+                </th:block>
+                <a th:if="${results.number < results.totalPages - 1}"
+                   th:href="@{/analysis(page=${results.number + 1}, size=${results.size}, status=${currentStatus}, type=${currentType}, requestId=${currentRequestId}, version=${currentVersion}, startDate=${currentStartDate}, endDate=${currentEndDate})}">Next &raquo;</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

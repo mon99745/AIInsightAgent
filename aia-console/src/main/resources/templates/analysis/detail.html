@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>Analysis Detail</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div style="margin-bottom: 16px;">
+        <a th:href="@{/analysis}" class="btn btn-secondary btn-sm">&laquo; Back to List</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            Analysis Result #<span th:text="${result.resultId}"></span>
+        </div>
+        <div class="card-body">
+            <dl class="detail-grid">
+                <dt>Result ID</dt>
+                <dd th:text="${result.resultId}"></dd>
+
+                <dt>Request ID</dt>
+                <dd th:text="${result.requestId}"></dd>
+
+                <dt>Actor ID</dt>
+                <dd th:text="${result.actorId}"></dd>
+
+                <dt>Input ID</dt>
+                <dd th:text="${result.inputId}"></dd>
+
+                <dt>Analysis Type</dt>
+                <dd th:text="${result.analysisTypeName}"></dd>
+
+                <dt>Analysis Version</dt>
+                <dd th:text="${result.analysisVersion ?: '-'}"></dd>
+
+                <dt>Status</dt>
+                <dd>
+                    <span th:class="'badge ' + (${result.status == 'SUCCESS'} ? 'badge-success' : 'badge-danger')"
+                          th:text="${result.status}"></span>
+                </dd>
+
+                <dt>Date</dt>
+                <dd th:text="${result.regDate != null ? #temporals.format(result.regDate, 'yyyy-MM-dd HH:mm:ss') : '-'}"></dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Result Payload</div>
+        <div class="card-body">
+            <pre class="payload-block json-block" id="resultPayload" th:text="${result.resultPayload}"></pre>
+        </div>
+    </div>
+
+    <div class="card" th:if="${!preparedContexts.isEmpty()}">
+        <div class="card-header">Prepared Context</div>
+        <div class="card-body">
+            <div th:each="ctx, iter : ${preparedContexts}" th:style="${!iter.last} ? 'margin-bottom: 20px;' : ''">
+                <div class="context-meta">
+                    <span class="badge badge-info" th:text="${ctx.contextType}"></span>
+                    <span class="badge" th:text="${ctx.confidenceLevel}"></span>
+                    <span class="context-date" th:text="${ctx.modDate != null ? #temporals.format(ctx.modDate, 'yyyy-MM-dd HH:mm:ss') : #temporals.format(ctx.regDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                </div>
+                <pre class="payload-block json-block context-payload" th:text="${ctx.contextPayload}"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        document.querySelectorAll('.json-block').forEach(function(el) {
+            try {
+                var parsed = JSON.parse(el.textContent);
+                el.textContent = JSON.stringify(parsed, null, 2);
+            } catch (e) {
+                // not JSON, leave as-is
+            }
+        });
+    })();
+    </script>
+</div>
+</body>
+</html>
