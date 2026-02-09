@@ -66,4 +66,22 @@ class DashboardControllerTest {
 
 		assertThat(viewName).isEqualTo("dashboard/index");
 	}
+
+	@Test
+	@DisplayName("root - 루트 경로에서 대시보드로 리다이렉트")
+	void root_RedirectsToDashboard() {
+		String redirectUrl = dashboardController.root();
+
+		assertThat(redirectUrl).isEqualTo("redirect:/dashboard");
+	}
+
+	@Test
+	@DisplayName("root - 항상 같은 리다이렉트 URL 반환")
+	void root_AlwaysReturnsSameRedirect() {
+		String firstCall = dashboardController.root();
+		String secondCall = dashboardController.root();
+
+		assertThat(firstCall).isEqualTo(secondCall);
+		assertThat(firstCall).isEqualTo("redirect:/dashboard");
+	}
 }
