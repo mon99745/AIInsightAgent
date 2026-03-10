@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <header th:fragment="header" class="console-header">
     <div class="header-title">
@@ -7,6 +8,10 @@
     </div>
     <div class="header-info">
         <span class="header-time" id="currentTime"></span>
+        <span class="header-user" sec:authentication="name"></span>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-secondary btn-sm">로그아웃</button>
+        </form>
     </div>
 </header>
 </body>

@@ -10,4 +10,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ConsoleProperties {
 
 	private String appBaseUrl = "http://localhost:28080";
+
+	private Security security = new Security();
+
+	@Getter
+	@Setter
+	public static class Security {
+		private String username = "admin";
+		private String password = "admin";
+	}
 }

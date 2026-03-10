@@ -24,4 +24,24 @@ class ConsolePropertiesTest {
 
 		assertThat(properties.getAppBaseUrl()).isEqualTo("http://prod-server:8080");
 	}
+
+	@Test
+	@DisplayName("Security 기본값 - username: admin, password: admin")
+	void security_DefaultValues() {
+		ConsoleProperties properties = new ConsoleProperties();
+
+		assertThat(properties.getSecurity().getUsername()).isEqualTo("admin");
+		assertThat(properties.getSecurity().getPassword()).isEqualTo("admin");
+	}
+
+	@Test
+	@DisplayName("Security setter로 값 변경")
+	void security_SetterChangesValues() {
+		ConsoleProperties.Security security = new ConsoleProperties.Security();
+		security.setUsername("operator");
+		security.setPassword("secret");
+
+		assertThat(security.getUsername()).isEqualTo("operator");
+		assertThat(security.getPassword()).isEqualTo("secret");
+	}
 }
